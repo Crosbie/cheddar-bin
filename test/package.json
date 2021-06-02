@@ -1,0 +1,14 @@
+{
+  "name": "cheddar-bin",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "async": "^3.2.0",
+    "jimp": "^0.16.1",
+    "sqlite": "^4.0.18",
+    "sqlite3": "^5.0.0"
+  }
+}
