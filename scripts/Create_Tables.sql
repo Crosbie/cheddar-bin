@@ -9,31 +9,31 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE TABLE [dbo].[Cheese_Blocks](
-	[Block_ID] [uniqueidentifier] NOT NULL,
-	[Year_Code] [char](1) NOT NULL,
-	[Plant_Code] [char](1) NOT NULL,
-	[Day_Number] [numeric](3, 0) NOT NULL,
-	[Prod_Date] [date] NOT NULL,
-	[Prod_Time] [time](7) NOT NULL,
-	[Upload_Date] [date] NULL,
-	[Upload_Time] [time](7) NULL,
-	[Upload_Dir] [nvarchar](100) NULL,
-	[Upload_File] [nvarchar](100) NULL,
-	[Pallet] [numeric](18, 0) NULL,
-	[Block] [numeric](18, 0) NULL,
-	[Pass_Fail] [char](1) NOT NULL,
-	[Block_Image] [image] NULL,
+	[cb_id] [uniqueidentifier] NOT NULL,
+	[cb_year_code] [char](1) NULL,
+	[cb_plant_code] [char](1) NOT NULL,
+	[cb_day_number] [numeric](3, 0) NULL,
+	[cb_prod_date] [date] NOT NULL,
+	[cb_prod_time] [time](7) NOT NULL,
+	[cb_upload_date] [date] NOT NULL,
+	[cb_upload_time] [time](7) NOT NULL,
+	[cb_upload_dir] [nvarchar](100) NOT NULL,
+	[cb_upload_file] [nvarchar](100) NOT NULL,
+	[cb_pallet] [numeric](18, 0) NULL,
+	[cb_block] [numeric](18, 0) NULL,
+	[cb_pass_fail] [char](1) NOT NULL,
+	[cb_block_image] [image] NULL,
  CONSTRAINT [PK_Cheese_Blocks] PRIMARY KEY CLUSTERED 
 (
-	[Block_ID] ASC
+	[cb_id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[Cheese_Blocks] ADD  CONSTRAINT [DF_Cheese_Blocks_Block_ID]  DEFAULT (newid()) FOR [Block_ID]
+ALTER TABLE [dbo].[Cheese_Blocks] ADD  CONSTRAINT [DF_Cheese_Blocks_cb_id]  DEFAULT (newid()) FOR [cb_id]
 GO
 
-ALTER TABLE [dbo].[Cheese_Blocks] ADD  CONSTRAINT [DF_Cheese_Blocks_Pass_Fail]  DEFAULT ('P') FOR [Pass_Fail]
+ALTER TABLE [dbo].[Cheese_Blocks] ADD  CONSTRAINT [DF_Cheese_Blocks_cb_pass_fail]  DEFAULT ('P') FOR [cb_pass_fail]
 GO
 
 USE [Glanbia_Ireland_Cheese]
@@ -47,16 +47,16 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE TABLE [dbo].[Day_Codes](
-	[Year_Code] [char](1) NOT NULL,
-	[Plant_Code] [char](1) NOT NULL,
-	[Day_Number] [numeric](3, 0) NOT NULL,
-	[Last_Pallet] [numeric](18, 0) NULL,
-	[Last_Block] [numeric](18, 0) NULL,
+	[dc_year_code] [char](1) NOT NULL,
+	[dc_plant_code] [char](1) NOT NULL,
+	[dc_day_number] [numeric](3, 0) NOT NULL,
+	[dc_last_pallet] [numeric](18, 0) NULL,
+	[dc_last_block] [numeric](18, 0) NULL,
  CONSTRAINT [PK_Day_Codes] PRIMARY KEY CLUSTERED 
 (
-	[Year_Code] ASC,
-	[Plant_Code] ASC,
-	[Day_Number] ASC
+	[dc_year_code] ASC,
+	[dc_plant_code] ASC,
+	[dc_day_number] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
@@ -71,12 +71,15 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE TABLE [dbo].[Directories](
-	[Dir_Type] [nvarchar](10) NOT NULL,
-	[Dir_Path] [nvarchar](100) NOT NULL,
- CONSTRAINT [PK_Directories] PRIMARY KEY CLUSTERED 
+CREATE TABLE [dbo].[Cheese_Directories](
+	[cd_path] [nvarchar](100) NOT NULL,
+	[cd_pass_fail] [char](1) NOT NULL,
+	[cd_source_target] [char](1) NOT NULL,
+	[cd_active] [char](1) NULL,
+	[cd_sort_order] [int],
+ CONSTRAINT [PK_Cheese_Directories] PRIMARY KEY CLUSTERED 
 (
-	[Dir_Type] ASC
+	[cd_path] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
@@ -91,12 +94,12 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE TABLE [dbo].[Parameters](
-	[Par_Key] [nvarchar](50) NOT NULL,
-	[Par_Value] [nvarchar](100) NULL,
- CONSTRAINT [PK_Parameters] PRIMARY KEY CLUSTERED 
+CREATE TABLE [dbo].[Cheese_Parameters](
+	[cp_key] [nvarchar](50) NOT NULL,
+	[cp_value] [nvarchar](100) NULL,
+ CONSTRAINT [PK_Cheese_Parameters] PRIMARY KEY CLUSTERED 
 (
-	[Par_Key] ASC
+	[cp_key] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
@@ -112,11 +115,11 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE TABLE [dbo].[Plant_Codes](
-	[Plant_Code] [char](1) NOT NULL,
-	[Plant_Name] [nvarchar](50) NOT NULL,
+	[pc_code] [char](1) NOT NULL,
+	[pc_name] [nvarchar](50) NOT NULL,
  CONSTRAINT [PK_Plant_Codes] PRIMARY KEY CLUSTERED 
 (
-	[Plant_Code] ASC
+	[pc_code] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
@@ -132,18 +135,12 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE TABLE [dbo].[Year_Codes](
-	[Year_Code] [char](1) NOT NULL,
-	[Year] [numeric](4, 0) NOT NULL,
+	[yc_code] [char](1) NOT NULL,
+	[yc_year] [numeric](4, 0) NOT NULL,
  CONSTRAINT [PK_Year_Codes] PRIMARY KEY CLUSTERED 
 (
-	[Year_Code] ASC
+	[yc_code] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
 
-
-
-USE [Glanbia_Ireland_Cheese]
-SELECT Dir_Type, Dir_Path FROM Directories;
-INSERT INTO Directories (Dir_Type, Dir_Path) VALUES ("Good","./")
-SELECT Dir_Type, Dir_Path FROM Directories;

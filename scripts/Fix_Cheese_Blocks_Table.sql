@@ -31,3 +31,6 @@ GO
 
 ALTER TABLE [dbo].[Cheese_Blocks] ADD  CONSTRAINT [DF_Cheese_Blocks_Pass_Fail]  DEFAULT ('P') FOR [Pass_Fail]
 GO
+
+
+/* sqlcmd -S 127.0.0.1 -U sa -P 'Password1#' -i ./scripts/Fix_Cheese_Blocks_Table.sql */

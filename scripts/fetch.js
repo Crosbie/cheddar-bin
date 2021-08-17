@@ -1,16 +1,15 @@
 //filesystem library
 var fs = require('fs');
 var async = require('async');
+var sqlite3 = require('sqlite3').verbose();
 /* Nodejs SQLServer driver, info available here: 
 http://tediousjs.github.io/tedious/getting-started.html
 */
 var tedious = require('tedious');
+var db;
 
 var fileDirs = []; // boolean array to flag when a Dir has been processed
 // eg. [true,false,false]
-// Only process one Dir in a single pass
-// In this case index 1 will be processed next [true, *false*, false]
-var thisDirPassFail = ""; // current working dir PassFail status
 
 
 var Connection = tedious.Connection;
@@ -65,7 +64,7 @@ function fetch(){
 
       // Read all rows from table
       request = new Request(
-        'SELECT * FROM Cheese_Directories ORDER BY cd_sort_order;',
+        'SELECT cd_path FROM Cheese_Directories ORDER BY cd_sort_order;',
         function(err, rowCount, rows) {
         if (err) {
             cb(err);
@@ -103,12 +102,10 @@ function fetch(){
       var workingDir = __dirname;
       // TODO: uncomment for live dir selection
       // if(!fileDirs[0]){
-      //   workingDir = dirs[0].cd_path;
+      //   workingDir = dirs[0].Dir_Path;
       //   fileDirs[0] = true;
-      //   thisDirPassFail = dirs[0].cd_pass_fail
       // } else {
-      //   workingDir = dirs[1].cd_path;
-      //   thisDirPassFail = dirs[1].cd_pass_fail
+      //   workingDir = dirs[1].Dir_Path;
       //   fileDirs[1] = true;
       // }
       console.log("workingDir:", workingDir);
@@ -150,10 +147,9 @@ function fetch(){
     function doCleanup(files, cb){
       async.each(files,function(file,done) {
         // rename BMP file
+        fs.rename(file,file+'.DONE',noop);
         file = file.replace('.bmp','.jpg');
-        fs.rename(file,file+'.DONE',noop); // save file as .jpg.DONE
-        file = file.replace('.jpg','.bmp');
-        fs.unlink(file,done); // delete .bmp file
+        fs.unlink(file,done); // delete file
       }, function(deleteErr){
         cb(deleteErr,files);
       });
@@ -225,9 +221,6 @@ function insert(file, cb){
     return cb(null);
   });
 
-  var filename = file.replace(/^.*(\\|\/|\:)/, '');
-  var dir = file.replace(filename, "");
-
   var prodDate = file.split(' ')[1].split('_').join('/');
   prodDate = new Date(prodDate);
 
@@ -241,9 +234,9 @@ function insert(file, cb){
   request.addParameter('prodTime', TYPES.Time, prodTime);
   request.addParameter('uploadDate', TYPES.Date, new Date());
   request.addParameter('uploadTime', TYPES.Time, new Date());
-  request.addParameter('uploadDir', TYPES.NVarChar, dir);
-  request.addParameter('uploadFile', TYPES.NVarChar, filename);
-  request.addParameter('passFail', TYPES.Char, thisDirPassFail);
+  request.addParameter('uploadDir', TYPES.NVarChar, file);
+  request.addParameter('uploadFile', TYPES.NVarChar, file);
+  request.addParameter('passFail', TYPES.Char, 1);
   request.addParameter('blockImage', TYPES.Image, content);
 
   connection.execSql(request);
