@@ -42,7 +42,7 @@ var connection = new Connection(config);
       console.log('Error Connecting to DB: ', err)
     } else {
       console.log('Connected to DB...')
-      fetch(); // start process
+      run(); // start process
     }
   });
   connection.on('error', function(err) {
@@ -55,7 +55,7 @@ var connection = new Connection(config);
   // Initialize the connection.
   connection.connect();
 
-function fetch(){
+function run(){
 
   async.waterfall([
 
@@ -120,7 +120,7 @@ function fetch(){
         console.log('FILES:',files);
         var bmps = [];
         for(var i=0;i<files.length;i++){
-          if(files[i].indexOf('.bmp') > 0 && files[i].indexOf('.DONE') < 0){
+          if(files[i].indexOf('.jpg.DONE') > 0 ){
             bmps.push(workingDir + '/' + files[i]);
           }
         }
@@ -129,33 +129,12 @@ function fetch(){
       })
     },
 
-    function doConvert(files, cb){
-      async.each(files,function(file,done) {
-        file = file.replace('.bmp','');
-        convert(file,done)
-      }, function(convertErr){
-        cb(convertErr, files);
-      });
-    },
-
     function doInsert(files, cb){
       async.each(files,function(file,done) {
         file = file.replace('.bmp','.jpg');
         insert(file, done);
       }, function(insertErr){
         cb(insertErr,files);
-      });
-    },
-
-    function doCleanup(files, cb){
-      async.each(files,function(file,done) {
-        // rename BMP file
-        file = file.replace('.bmp','.jpg');
-        fs.rename(file,file+'.DONE',noop); // save file as .jpg.DONE
-        file = file.replace('.jpg','.bmp');
-        fs.unlink(file,done); // delete .bmp file
-      }, function(deleteErr){
-        cb(deleteErr,files);
       });
     }
   ], function(err,result){
@@ -167,23 +146,6 @@ function fetch(){
       })  
     }
 
-function noop(){}
-
-function convert(filepath, cb){
-  const Jimp = require("jimp");
-  
-  console.log("convert bmp to jpg", filepath);
-
-  Jimp.read(filepath + ".bmp", function (err, image) {
-    if (err) {
-      console.log('Convert Error:',err);
-      cb(err);
-    } else {
-      image.write(filepath +".jpg");
-      cb(null);
-    }
-  })
-}
 
 function insert(file, cb){
   fs.readFile(file, function(err, content){

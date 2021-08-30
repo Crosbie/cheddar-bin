@@ -42,7 +42,7 @@ var connection = new Connection(config);
       console.log('Error Connecting to DB: ', err)
     } else {
       console.log('Connected to DB...')
-      fetch(); // start process
+      run(); // start process
     }
   });
   connection.on('error', function(err) {
@@ -55,7 +55,7 @@ var connection = new Connection(config);
   // Initialize the connection.
   connection.connect();
 
-function fetch(){
+function run(){
 
   async.waterfall([
 
@@ -138,15 +138,6 @@ function fetch(){
       });
     },
 
-    function doInsert(files, cb){
-      async.each(files,function(file,done) {
-        file = file.replace('.bmp','.jpg');
-        insert(file, done);
-      }, function(insertErr){
-        cb(insertErr,files);
-      });
-    },
-
     function doCleanup(files, cb){
       async.each(files,function(file,done) {
         // rename BMP file
@@ -184,75 +175,3 @@ function convert(filepath, cb){
     }
   })
 }
-
-function insert(file, cb){
-  fs.readFile(file, function(err, content){
-    if(err){
-      return console.error('Insert:Error reading cheese file: ', err);
-    }
-
-    console.log('insert cheese');
-    var entry = {
-      id: null,
-      created: file.split(' ')[1],
-      day: file.split(' ')[1],
-      year: file.split(' ')[1],
-      plant: 'C',
-      pallet: null,
-      prod: file.split(' ')[0].replace('0_',''),
-      xray: content
-    };
-
-    const sql = 'INSERT INTO Cheese_Blocks (' +
-    '[cb_plant_code],' +
-    '[cb_prod_date],' +
-    '[cb_prod_time],' +
-    '[cb_upload_date],' +
-    '[cb_upload_time],' +
-    '[cb_upload_dir],' +
-    '[cb_upload_file],' +
-    '[cb_pass_fail],' +
-    '[cb_block_image])' +
-    'VALUES '+
-        '(@plantCode, @prodDate, @prodTime, @UploadDate, @uploadTime, @uploadDir, @uploadFile, @passFail, @blockImage)';
-  const request = new Request(sql, (err, rowCount) => {
-    if (err) {
-      console.error('Insert Error:',err);
-      return cb(err);
-    }
-    console.log('rowCount: ', rowCount);
-    console.log('input parameters success!');
-    return cb(null);
-  });
-
-  var filename = file.replace(/^.*(\\|\/|\:)/, '');
-  var dir = file.replace(filename, "");
-
-  var prodDate = file.split(' ')[1].split('_').join('/');
-  prodDate = new Date(prodDate);
-  // format date as YYYYMMDD
-  formatedDate = prodDate.getYear() + ("0" + (this.getMonth() + 1)).slice(-2) + ("0" + prodDate.getDate()).slice(-2)
-
-  var prodTime = file.split(' ')[1].split('_').join('/');
-  prodTime += ' ' + file.split(' ')[2].split('.jpg')[0].split('_').join(':');
-  prodTime = new Date(prodTime);
-  // format time as HH:MM:SS
-  formatedTime = prodTime.getHours() + ":" + prodTime.getMinutes() + ":" + prodTime.getSeconds();
-
-  // Setting values to the variables. Note: first argument matches name of variable above.
-  request.addParameter('plantCode', TYPES.Char, 'C');
-  request.addParameter('prodDate', TYPES.NVarChar, formatedDate);
-  request.addParameter('prodTime', TYPES.NVarChar, formatedTime);
-  request.addParameter('uploadDate', TYPES.NVarChar, new Date());
-  request.addParameter('uploadTime', TYPES.NVarChar, new Date());
-  request.addParameter('uploadDir', TYPES.NVarChar, dir);
-  request.addParameter('uploadFile', TYPES.NVarChar, filename);
-  request.addParameter('passFail', TYPES.Char, thisDirPassFail);
-  request.addParameter('blockImage', TYPES.Image, content);
-
-  connection.execSql(request);
-  })
-}
-
-// docker run -e 'HOMEBREW_NO_ENV_FILTERING=1' -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Password1#' -p 1433:1433 -d microsoft/mssql-server-linux
-// sqlcmd -S 127.0.0.1 -U sa -P Password1# -d SampleDB -i ./CreateTestData.sql
