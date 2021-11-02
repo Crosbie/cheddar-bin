@@ -6,6 +6,11 @@ http://tediousjs.github.io/tedious/getting-started.html
 */
 var tedious = require('tedious');
 
+var DEV_FLAG = false;
+console.log('\n\n*****************');
+console.log('DEV_FLAG:',DEV_FLAG);
+console.log('*****************\n\n');
+
 var fileDirs = []; // boolean array to flag when a Dir has been processed
 // eg. [true,false,false]
 // Only process one Dir in a single pass
@@ -41,8 +46,18 @@ var connection = new Connection(config);
     if(err) {
       console.log('Error Connecting to DB: ', err)
     } else {
-      console.log('Connected to DB...')
-      run(); // start process
+      console.log('Connected to DB...');
+      readDirs(function(err,dirs){
+        if(err){
+          return console.error('Error reading Dirs:',err);
+        } else {
+          // Start Process
+          console.log('Found %s directories',dirs.length);
+          async.eachSeries(dirs,function(dir,done) {
+            run(dir,done);
+          })
+        }
+      })
     }
   });
   connection.on('error', function(err) {
@@ -55,62 +70,18 @@ var connection = new Connection(config);
   // Initialize the connection.
   connection.connect();
 
-function run(){
+function run(dir, callback){
 
   async.waterfall([
 
-    // Fetch the Good and Bad directories from DB
-    function fetchDir(cb){
-      console.log('Reading rows from the Directories Table...');
+    function doRead(cb){
+      var workingDir = dir.cd_path;
+      thisDirPassFail = dir.cd_pass_fail
 
-      // Read all rows from table
-      request = new Request(
-        'SELECT * FROM Cheese_Directories ORDER BY cd_sort_order;',
-        function(err, rowCount, rows) {
-        if (err) {
-            cb(err);
-        } else {
-            console.log(rowCount + ' row(s) returned');
-        }
-      });
-
-      // Print the rows read
-      var result = [];
-      request.on('row', function(columns) {
-        var rowObj = {}
-          columns.forEach(function(column) {
-              if (column.value === null) {
-                  console.log('NULL');
-              } else {
-                  rowObj[column.metadata.colName] =column.value;
-              }
-          });
-          result.push(rowObj);
-          console.log(result);
-      });
+      if(DEV_FLAG){
+        workingDir = "./test/";
+      }
       
-      // return CB function on end of request
-      // this ends the fetchDir function
-      request.on('requestCompleted',function(){
-        return cb(null,result);
-      });
-
-      // Execute SQL statement
-      connection.execSql(request);
-    },
-
-    function doRead(dirs, cb){
-      var workingDir = __dirname;
-      // TODO: uncomment for live dir selection
-      // if(!fileDirs[0]){
-      //   workingDir = dirs[0].cd_path;
-      //   fileDirs[0] = true;
-      //   thisDirPassFail = dirs[0].cd_pass_fail
-      // } else {
-      //   workingDir = dirs[1].cd_path;
-      //   thisDirPassFail = dirs[1].cd_pass_fail
-      //   fileDirs[1] = true;
-      // }
       console.log("workingDir:", workingDir);
 
       fs.readdir(workingDir, function(readErr,files){
@@ -142,7 +113,7 @@ function run(){
       async.each(files,function(file,done) {
         // rename BMP file
         file = file.replace('.bmp','.jpg');
-        fs.rename(file,file+'.DONE',noop); // save file as .jpg.DONE
+        // fs.rename(file,file+'.DONE',noop); // save file as .jpg.DONE
         file = file.replace('.jpg','.bmp');
         fs.unlink(file,done); // delete .bmp file
       }, function(deleteErr){
@@ -154,9 +125,10 @@ function run(){
       console.error('ERROR Occurred during batch function:',err);
     } else {
       console.log('DONE');
-        }
-      })  
+      return callback();
     }
+  })  
+}
 
 function noop(){}
 
@@ -174,4 +146,43 @@ function convert(filepath, cb){
       cb(null);
     }
   })
+}
+
+function readDirs(cb){
+  console.log('Reading rows from the Directories Table...');
+
+      // Read all rows from table
+      request = new Request(
+        "SELECT * FROM Cheese_Directories WHERE cd_source_target = 'S' AND cd_active = 'Y' ORDER BY cd_sort_order;",
+        function(err, rowCount, rows) {
+        if (err) {
+            cb(err);
+        } else {
+            console.log(rowCount + ' row(s) returned');
+        }
+      });
+
+      // Print the rows read
+      var result = [];
+      request.on('row', function(columns) {
+        var rowObj = {}
+          columns.forEach(function(column) {
+              if (column.value === null) {
+                  console.log('NULL');
+              } else {
+                  rowObj[column.metadata.colName] =column.value;
+              }
+          });
+          result.push(rowObj);
+          console.log(result);
+      });
+      
+      // return CB function on end of request
+      // this ends the fetchDir function
+      request.on('requestCompleted',function(){
+        return cb(null,result);
+      });
+
+      // Execute SQL statement
+      connection.execSql(request);
 }

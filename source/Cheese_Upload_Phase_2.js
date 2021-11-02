@@ -1,17 +1,20 @@
 //filesystem library
 var fs = require('fs');
 var async = require('async');
+var path = require('path');
 /* Nodejs SQLServer driver, info available here: 
 http://tediousjs.github.io/tedious/getting-started.html
 */
+
+var DEV_FLAG = false;
+console.log('\n\n*****************');
+console.log('DEV_FLAG:',DEV_FLAG);
+console.log('*****************\n\n');
+
 var tedious = require('tedious');
 
-var fileDirs = []; // boolean array to flag when a Dir has been processed
-// eg. [true,false,false]
-// Only process one Dir in a single pass
-// In this case index 1 will be processed next [true, *false*, false]
 var thisDirPassFail = ""; // current working dir PassFail status
-
+var workingDir = "";
 
 var Connection = tedious.Connection;
 var Request = tedious.Request;
@@ -41,8 +44,18 @@ var connection = new Connection(config);
     if(err) {
       console.log('Error Connecting to DB: ', err)
     } else {
-      console.log('Connected to DB...')
-      run(); // start process
+      console.log('Connected to DB...');
+      readDirs("S",function(err,dirs){
+        if(err){
+          return console.error('Error reading Dirs:',err);
+        } else {
+          // Start Process
+          console.log('Found %s directories',dirs.length);
+          async.eachSeries(dirs,function(dir,done) {
+            run(dir,done);
+          })
+        }
+      })
     }
   });
   connection.on('error', function(err) {
@@ -55,20 +68,196 @@ var connection = new Connection(config);
   // Initialize the connection.
   connection.connect();
 
-function run(){
+function run(dir,callback){
 
   async.waterfall([
 
-    // Fetch the Good and Bad directories from DB
-    function fetchDir(cb){
-      console.log('Reading rows from the Directories Table...');
+    function doRead(cb){
+      workingDir = dir.cd_path;
+      thisDirPassFail = dir.cd_pass_fail
+
+      if(DEV_FLAG){
+        workingDir = "./test/";
+      }
+      
+      console.log("workingDir:", workingDir);
+
+      fs.readdir(workingDir, function(readErr,files){
+        if(readErr){
+          console.log('HERE',readErr);
+          return cb(readErr);
+        }
+        console.log('FILES:',files);
+        var images = [];
+        for(var i=0;i<files.length;i++){
+          if(files[i].indexOf('.jpg') > 0 ){
+            images.push(workingDir + '/' + files[i]);
+          }
+        }
+        console.log('FILES To Insert',images)
+        cb(null, images);
+      })
+    },
+
+    // Move files from Source to Target dir
+    function moveFiles(images, cb){
+      
+      // get Target dirs from DB
+      readDirs("T",function(err,dirs){
+        if (err){
+          return cb(err);
+        } else {
+          var TARGET = "";
+          var movedFiles = [];
+
+          // Use pass/fail target dir depending on which source dir we are using
+          for(var i=0;i<dirs.length;i++){
+            if(dirs[i].cd_pass_fail === thisDirPassFail){
+              TARGET = dirs[i].cd_path;
+            }
+          }
+
+          if (TARGET===""){
+            console.warn("\n No Target folder found, leaving images in source \n");
+            return cb(null,images);
+          } else {
+            console.log('TARGET DIR', TARGET);
+          }
+
+          // move each image to Target and collect array of new file locations to pass to next function
+          async.each(images, function(image,done){
+            var filename = image.replace(/^.*(\\|\/|\:)/, '');
+
+            var newPath = TARGET + '/' + filename;
+
+            // FOR TESTING
+            if(DEV_FLAG){
+              var dir = image.replace(filename,"");
+              var newPath = dir + '/files/' + filename;
+            }
+            
+
+            newPath = path.normalize(newPath);
+            
+            fs.rename(image, newPath, function (err) {
+              if (err) throw err
+              console.log('Successfully moved image!');
+              movedFiles.push(newPath);
+              done();
+            })
+          }, function(moveErr){
+            console.log('movedFiles',movedFiles);
+            cb(moveErr,movedFiles);
+          })
+        }
+      })
+    },
+
+    function doInsert(files, cb){
+      async.eachSeries(files,function(file,done) {
+        insert(file, done);
+      }, function(insertErr){
+        cb(insertErr,files);
+      });
+    }
+  ], function(err,result){
+    if(err){
+      console.error('ERROR Occurred during batch function:',err);
+    } else {
+      console.log('DONE');
+      return callback();
+      }
+    })
+  }
+
+
+function insert(file, cb){
+  fs.readFile(file, function(err, content){
+    if(err){
+      return console.error('Insert:Error reading cheese file: ', err);
+    }
+
+    var filename = file.replace(/^.*(\\|\/|\:)/, '');
+    var dir = file.replace(filename, "");
+
+    // filename
+    // 0_12832230 2018_03_23 21_20_15.bmp
+    // 0_00000009_2021_01_18_13_34_29.bmp
+
+    var filenameSections = filename.split('.')[0].split('_'); // [0,0000009,2021,01,18,13,34,29]
+    var filenameDate = filenameSections.slice(2,5).join('/');
+    var filenameTime = filenameSections.slice(5).join(':');
+
+    console.log('insert cheese');
+
+    const sql = 'INSERT INTO Cheese_Blocks (' +
+    '[cb_plant_code],' +
+    '[cb_prod_date],' +
+    '[cb_prod_time],' +
+    '[cb_upload_date],' +
+    '[cb_upload_time],' +
+    '[cb_upload_dir],' +
+    '[cb_upload_file],' +
+    '[cb_pass_fail],' +
+    '[cb_block_image],' +
+    '[cb_target_dir])' +
+    'VALUES '+
+        '(@plantCode, @prodDate, @prodTime, @UploadDate, @uploadTime, @uploadDir, @uploadFile, @passFail, @blockImage, @targetDir)';
+  const request = new Request(sql, (err, rowCount) => {
+    if (err) {
+      console.error('Insert Error:',err);
+      return cb(err);
+    }
+    console.log('input success!', filename);
+    return cb(null);
+  });
+
+
+  var prodDate = new Date(filenameDate);
+  var UTCDate = new Date(prodDate.getTime() - (prodDate.getTimezoneOffset() * 60000));
+
+  console.log('\n\n*******')
+  console.log('filename',filenameDate);
+  console.log('prodDate',prodDate);
+  console.log('UTC Date',UTCDate);
+  console.log('*******')
+  console.log('*******\n\n')
+  
+  // format date as YYYYMMDD
+  // var formatedDate = prodDate.getYear() + ("0" + (prodDate.getMonth() + 1)).slice(-2) + ("0" + prodDate.getDate()).slice(-2)
+
+  var time = filenameDate + ' ' + filenameTime;
+  prodTime = new Date(time);
+  // format time as HH:MM:SS
+  var formatedTime = prodTime.getHours() + ":" + prodTime.getMinutes() + ":" + prodTime.getSeconds();
+
+  // Setting values to the variables. Note: first argument matches name of variable above.
+  request.addParameter('plantCode', TYPES.Char, 'C');
+  request.addParameter('prodDate', TYPES.Date, UTCDate);
+  request.addParameter('prodTime', TYPES.NVarChar, formatedTime);
+  request.addParameter('uploadDate', TYPES.Date, new Date());
+  request.addParameter('uploadTime', TYPES.DateTime, new Date());
+  request.addParameter('uploadDir', TYPES.NVarChar, workingDir);
+  request.addParameter('uploadFile', TYPES.NVarChar, filename);
+  request.addParameter('passFail', TYPES.Char, thisDirPassFail);
+  request.addParameter('blockImage', TYPES.Image, content);
+  request.addParameter('targetDir', TYPES.NVarChar, dir);
+
+  connection.execSql(request);
+  })
+}
+
+function readDirs(sourceTarget,cb){
+  console.log('Reading rows from the Directories Table...');
 
       // Read all rows from table
       request = new Request(
-        'SELECT * FROM Cheese_Directories ORDER BY cd_sort_order;',
+        "SELECT * FROM Cheese_Directories WHERE cd_source_target = '"+
+         sourceTarget + "' AND cd_active = 'Y' ORDER BY cd_sort_order;",
         function(err, rowCount, rows) {
         if (err) {
-            cb(err);
+            console.error('DB Read error:',err);
+            // return cb(err);
         } else {
             console.log(rowCount + ' row(s) returned');
         }
@@ -97,123 +286,6 @@ function run(){
 
       // Execute SQL statement
       connection.execSql(request);
-    },
-
-    function doRead(dirs, cb){
-      var workingDir = __dirname;
-      // TODO: uncomment for live dir selection
-      // if(!fileDirs[0]){
-      //   workingDir = dirs[0].cd_path;
-      //   fileDirs[0] = true;
-      //   thisDirPassFail = dirs[0].cd_pass_fail
-      // } else {
-      //   workingDir = dirs[1].cd_path;
-      //   thisDirPassFail = dirs[1].cd_pass_fail
-      //   fileDirs[1] = true;
-      // }
-      console.log("workingDir:", workingDir);
-
-      fs.readdir(workingDir, function(readErr,files){
-        if(readErr){
-          return cb(readErr);
-        }
-        console.log('FILES:',files);
-        var bmps = [];
-        for(var i=0;i<files.length;i++){
-          if(files[i].indexOf('.jpg.DONE') > 0 ){
-            bmps.push(workingDir + '/' + files[i]);
-          }
-        }
-        console.log('BMPS',bmps)
-        cb(null, bmps);
-      })
-    },
-
-    function doInsert(files, cb){
-      async.each(files,function(file,done) {
-        file = file.replace('.bmp','.jpg');
-        insert(file, done);
-      }, function(insertErr){
-        cb(insertErr,files);
-      });
-    }
-  ], function(err,result){
-    if(err){
-      console.error('ERROR Occurred during batch function:',err);
-    } else {
-      console.log('DONE');
-        }
-      })  
-    }
-
-
-function insert(file, cb){
-  fs.readFile(file, function(err, content){
-    if(err){
-      return console.error('Insert:Error reading cheese file: ', err);
-    }
-
-    console.log('insert cheese');
-    var entry = {
-      id: null,
-      created: file.split(' ')[1],
-      day: file.split(' ')[1],
-      year: file.split(' ')[1],
-      plant: 'C',
-      pallet: null,
-      prod: file.split(' ')[0].replace('0_',''),
-      xray: content
-    };
-
-    const sql = 'INSERT INTO Cheese_Blocks (' +
-    '[cb_plant_code],' +
-    '[cb_prod_date],' +
-    '[cb_prod_time],' +
-    '[cb_upload_date],' +
-    '[cb_upload_time],' +
-    '[cb_upload_dir],' +
-    '[cb_upload_file],' +
-    '[cb_pass_fail],' +
-    '[cb_block_image])' +
-    'VALUES '+
-        '(@plantCode, @prodDate, @prodTime, @UploadDate, @uploadTime, @uploadDir, @uploadFile, @passFail, @blockImage)';
-  const request = new Request(sql, (err, rowCount) => {
-    if (err) {
-      console.error('Insert Error:',err);
-      return cb(err);
-    }
-    console.log('rowCount: ', rowCount);
-    console.log('input parameters success!');
-    return cb(null);
-  });
-
-  var filename = file.replace(/^.*(\\|\/|\:)/, '');
-  var dir = file.replace(filename, "");
-
-  var prodDate = file.split(' ')[1].split('_').join('/');
-  prodDate = new Date(prodDate);
-  // format date as YYYYMMDD
-  formatedDate = prodDate.getYear() + ("0" + (this.getMonth() + 1)).slice(-2) + ("0" + prodDate.getDate()).slice(-2)
-
-  var prodTime = file.split(' ')[1].split('_').join('/');
-  prodTime += ' ' + file.split(' ')[2].split('.jpg')[0].split('_').join(':');
-  prodTime = new Date(prodTime);
-  // format time as HH:MM:SS
-  formatedTime = prodTime.getHours() + ":" + prodTime.getMinutes() + ":" + prodTime.getSeconds();
-
-  // Setting values to the variables. Note: first argument matches name of variable above.
-  request.addParameter('plantCode', TYPES.Char, 'C');
-  request.addParameter('prodDate', TYPES.NVarChar, formatedDate);
-  request.addParameter('prodTime', TYPES.NVarChar, formatedTime);
-  request.addParameter('uploadDate', TYPES.NVarChar, new Date());
-  request.addParameter('uploadTime', TYPES.NVarChar, new Date());
-  request.addParameter('uploadDir', TYPES.NVarChar, dir);
-  request.addParameter('uploadFile', TYPES.NVarChar, filename);
-  request.addParameter('passFail', TYPES.Char, thisDirPassFail);
-  request.addParameter('blockImage', TYPES.Image, content);
-
-  connection.execSql(request);
-  })
 }
 
 // docker run -e 'HOMEBREW_NO_ENV_FILTERING=1' -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Password1#' -p 1433:1433 -d microsoft/mssql-server-linux

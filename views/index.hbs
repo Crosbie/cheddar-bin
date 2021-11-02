@@ -1,2 +1,29 @@
 <h1>{{title}}</h1>
-<p>Welcome to {{title}}</p>
+
+
+<div id="toolbar">
+  <button id="button" class="btn btn-secondary">Reset</button><br/>
+  <input id="cb_plant_code" type="text" placeholder="Plant Code"/>
+  <input id="cb_prod_date" type="text" placeholder="Prod Date"/>
+  <input id="cb_prod_time" type="text" placeholder="Prod Time"/>
+  <input id="cb_upload_date" type="text" placeholder="Upload Date"/>
+  <input id="cb_pass_fail" type="text" placeholder="Pass Fail"/>
+</div>
+<table
+  id="table"
+  data-toggle="data"
+  data-toolbar="#toolbar"
+  data-filter-control="true"
+  data-show-search-clear-button="true"
+  data-url="cheese/list">
+  <thead>
+    <tr>
+      <th data-visible="false" data-field="cb_id">ID</th>
+      <th data-field="cb_plant_code" data-filter-control="input">Plant Code</th>
+      <th data-sortable="true" data-filter-control="input" data-field="cb_prod_date" data-formatter="dateFormatter">Prod Date</th>
+      <th data-sortable="true" data-field="cb_prod_time" data-formatter="timeFormatter">Prod Time</th>
+      <th data-sortable="true" data-field="cb_upload_date" data-formatter="dateFormatter">Upload Date</th>
+      <th data-sortable="true" data-field="cb_pass_fail">Pass/Fail</th>
+    </tr>
+  </thead>
+</table>

@@ -6,7 +6,7 @@ var lessMiddleware = require('less-middleware');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var cheeseRouter = require('./routes/cheese');
 
 var app = express();
 
@@ -20,10 +20,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(lessMiddleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname + '/node_modules/bootstrap/dist')); // include bootstrap styles
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/fetch', )
+app.use('/cheese', cheeseRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
