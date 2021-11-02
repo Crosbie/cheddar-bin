@@ -6,26 +6,39 @@ var Connection = tedious.Connection;
 var Request = tedious.Request;
 var TYPES = tedious.TYPES;
 
-var config = {
-  server: "localhost",
-  options: {
-    // port: 1433,
-    encrypt: false,
-    database: 'Glanbia_Ireland_Cheese'
-  },
- authentication: {
-    type: "default",
-    options: {  
-      userName: "sa",
-      // password: "Wjac23052208#sa",
-      password: "Password1#",
-    }
-  }
-};
+var config = require('../dbConfig.json');
 
 var connection = new Connection(config);
 
-  function noop(){}; // end function call
+function noop(){}; // end function call
+
+
+router.post('filter', function(req, res){
+  connection = new Connection(config);
+  // 
+  // Setup event handler when the connection is established. 
+  connection.on('connect', function(err) {
+    if(err) {
+      console.log('Error Connecting to DB: ', err)
+    } else {
+      console.log('Connected to DB...');
+      readCheese(function(err,data){
+        connection.close();
+        if(err){
+          return res.error('Error reading cheese:',err);
+        } else {
+          return res.json(data);
+        }
+      })
+    }
+  });
+  connection.on('error', function(err) {
+    console.log('Error2: ', err)
+  });
+
+  // Initialize the connection.
+  connection.connect();
+})
 
 
 /* GET users listing. */

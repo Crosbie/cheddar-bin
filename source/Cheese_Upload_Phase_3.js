@@ -9,22 +9,7 @@ var Connection = tedious.Connection;
 var Request = tedious.Request;
 var TYPES = tedious.TYPES;
 
-var config = {
-  server: "localhost",
-  options: {
-    // port: 1433,
-    encrypt: false,
-    database: 'Glanbia_Ireland_Cheese'
-  },
- authentication: {
-    type: "default",
-    options: {  
-      userName: "sa",
-      // password: "Wjac23052208#sa",
-      password: "Password1#",
-    }
-  }
-};
+var config = require('../dbConfig.json');
 
 var storedProcedure = '[dbo].[test_proced]'; // TODO: insert SP Name
 

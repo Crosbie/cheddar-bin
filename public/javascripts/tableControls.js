@@ -10,6 +10,7 @@ $(function() {
   $button.click(function () {
     $('input').val(''); // clear all search boxes
     $table.bootstrapTable('filterBy', {}) // reset table filter
+    bindRowsEvent()
   })
   
   // Filter boxes
@@ -25,9 +26,13 @@ $(function() {
         [id]: txt
       })
     }
+    bindRowsEvent()
   })
 
-  // select row
+  bindRowsEvent()
+})
+
+function bindRowsEvent(){
   setTimeout(function(){
     $('tr').on('click',function(e){
       var row = $(e.currentTarget)[0];
@@ -35,9 +40,7 @@ $(function() {
     })
   },1000);
   
-
-
-})
+}
 
 
 // Column formatter functions

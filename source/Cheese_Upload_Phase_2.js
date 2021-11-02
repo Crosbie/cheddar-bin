@@ -20,22 +20,7 @@ var Connection = tedious.Connection;
 var Request = tedious.Request;
 var TYPES = tedious.TYPES;
 
-var config = {
-  server: "localhost",
-  options: {
-    // port: 1433,
-    encrypt: false,
-    database: 'Glanbia_Ireland_Cheese'
-  },
- authentication: {
-    type: "default",
-    options: {  
-      userName: "sa",
-      // password: "Wjac23052208#sa",
-      password: "Password1#",
-    }
-  }
-};
+var config = require('../dbConfig.json');
 
 var connection = new Connection(config);
 
@@ -186,7 +171,7 @@ function insert(file, cb){
 
     var filenameSections = filename.split('.')[0].split('_'); // [0,0000009,2021,01,18,13,34,29]
     var filenameDate = filenameSections.slice(2,5).join('/');
-    var filenameTime = filenameSections.slice(5).join(':');
+    var filenameTime = filenameSections.slice(5,8).join(':');
 
     console.log('insert cheese');
 
