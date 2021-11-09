@@ -2,7 +2,8 @@
   "server": "localhost",
   "options": {
     "encrypt": false,
-    "database": "Glanbia_Ireland_Cheese"
+    "database": "Glanbia_Ireland_Cheese",
+    "rowCollectionOnDone": true
   },
  "authentication": {
     "type": "default",

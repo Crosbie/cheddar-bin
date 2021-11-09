@@ -4,26 +4,57 @@
 <div id="toolbar">
   <button id="reset" class="btn btn-secondary">Reset</button>
   <button id="filter" class="btn btn-primary">Filter</button><br/>
-  <input id="cb_plant_code" type="text" placeholder="Plant Code"/>
-  <input id="cb_prod_date" type="text" placeholder="Prod Date"/>
-  <input id="cb_prod_time" type="text" placeholder="Prod Time"/>
-  <input id="cb_upload_date" type="text" placeholder="Upload Date"/>
-  <input id="cb_pass_fail" type="text" placeholder="Pass Fail"/>
+  <table id="inputs">
+    <tr>
+      <td><label>Plant Code</label>
+        <input id="cb_plant_code" type="text" placeholder="Plant Code"/>
+      </td>
+      <td><label>Year Code</label>
+        <input id="cb_year_code" type="text" placeholder="Year Code"/>
+      </td>
+      <td>
+        <label>Production Date from:</label>
+        <input id="cb_prod_date" type="date" placeholder="Prod Date"/><br/>
+        <label>Production Date to:</label>
+        <input id="cb_prod_date2" type="date" placeholder="Prod Date"/>
+      </td>
+      <td>
+        <label>Production Time from:</label>
+      <input id="cb_prod_time" type="time" placeholder="Prod Time"/><br/>
+      <label>Production Time to:</label>
+      <input id="cb_prod_time2" type="time" placeholder="Prod Time"/>
+      </td>
+      <td>
+        <label>Pallet Number</label>
+        <input id="cb_pallet" type="text" placeholder="Pallet"/>
+      </td>
+      <td>
+        <label>Block Number</label>
+        <input id="cb_block" type="text" placeholder="Block"/>
+      </td>
+      <td>
+        <label>Pass / Fail</label>
+        <input id="cb_pass_fail" type="text" placeholder="Pass Fail"/>
+      </td>
+    
+  </table>
+
 </div>
 <table
   id="table"
   data-toggle="data"
-  data-toolbar="#toolbar"
   data-filter-control="true"
   data-show-search-clear-button="true"
-  data-url="cheese/list">
+  data-ajax="ajaxRequest">
   <thead>
     <tr>
       <th data-visible="false" data-field="cb_id">ID</th>
-      <th data-field="cb_plant_code" data-filter-control="input">Plant Code</th>
-      <th data-sortable="true" data-filter-control="input" data-field="cb_prod_date" data-formatter="dateFormatter">Prod Date</th>
+      <th data-field="cb_plant_code">Plant Code</th>
+      <th data-field="cb_year_code">Year Code</th>
+      <th data-sortable="true" data-field="cb_prod_date" data-formatter="dateFormatter">Prod Date</th>
       <th data-sortable="true" data-field="cb_prod_time" data-formatter="timeFormatter">Prod Time</th>
-      <th data-sortable="true" data-field="cb_upload_date" data-formatter="dateFormatter">Upload Date</th>
+      <th data-sortable="true" data-field="cb_pallet">Pallet</th>
+      <th data-sortable="true" data-field="cb_block">Block</th>
       <th data-sortable="true" data-field="cb_pass_fail">Pass/Fail</th>
     </tr>
   </thead>

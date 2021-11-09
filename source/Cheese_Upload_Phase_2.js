@@ -274,4 +274,4 @@ function readDirs(sourceTarget,cb){
 }
 
 // docker run -e 'HOMEBREW_NO_ENV_FILTERING=1' -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Password1#' -p 1433:1433 -d microsoft/mssql-server-linux
-// sqlcmd -S 127.0.0.1 -U sa -P Password1# -d SampleDB -i ./CreateTestData.sql
+// sqlcmd -S 127.0.0.1 -U sa -P Password1#  -i ./scripts/SP_FILTER_CHEESE_BLOCKS.sql
