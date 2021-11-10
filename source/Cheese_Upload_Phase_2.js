@@ -24,6 +24,9 @@ var config = require('../dbConfig.json');
 
 var connection = new Connection(config);
 
+// start function exposed to external calls
+module.exports.start = function(callback){
+  connection = new Connection(config);
   // Setup event handler when the connection is established. 
   connection.on('connect', function(err) {
     if(err) {
@@ -38,6 +41,9 @@ var connection = new Connection(config);
           console.log('Found %s directories',dirs.length);
           async.eachSeries(dirs,function(dir,done) {
             run(dir,done);
+          }, function(){
+            connection.close();
+            return callback();
           })
         }
       })
@@ -52,6 +58,7 @@ var connection = new Connection(config);
 
   // Initialize the connection.
   connection.connect();
+}
 
 function run(dir,callback){
 

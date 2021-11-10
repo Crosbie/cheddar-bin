@@ -10,7 +10,7 @@ $(function() {
   $table.bootstrapTable();
   $reset.click(function () {
     $('input').val(''); // clear all search boxes
-    $table.bootstrapTable('filterBy', {}) // reset table filter
+    $table.bootstrapTable('refresh')
     bindRowsEvent()
   })
 
@@ -67,13 +67,15 @@ function ajaxRequest(params) {
   // format times
   var prod_time = $('#cb_prod_time')[0].value ? $('#cb_prod_time')[0].value + ":00" : null;
   var prod_time2 = $('#cb_prod_time2')[0].value ? $('#cb_prod_time2')[0].value + ":00" : null;
-  
+
   data.cb_plant_code = $('#cb_plant_code')[0].value || null;
   data.cb_year_code = $('#cb_year_code')[0].value || null;
   data.cb_prod_date = $('#cb_prod_date')[0].value || null;
   data.cb_prod_date2 = $('#cb_prod_date2')[0].value || null;
   data.cb_prod_time = prod_time;
   data.cb_prod_time2 = prod_time2;
+  data.cb_pallet = $('#cb_pallet')[0].value || null;
+  data.cb_block = $('#cb_block')[0].value || null;
   data.cb_pass_fail = $('#cb_pass_fail')[0].value || null;
 
   console.log('filter-data',data);

@@ -11,17 +11,23 @@ var TYPES = tedious.TYPES;
 
 var config = require('../dbConfig.json');
 
-var storedProcedure = '[dbo].[test_proced]'; // TODO: insert SP Name
+var storedProcedure = '[dbo].[SP_UPLOAD_PHASE_3]';
 
 var connection = new Connection(config);
 
+
+module.exports.start = function(callback){
+  connection = new Connection(config);
   // Setup event handler when the connection is established. 
   connection.on('connect', function(err) {
     if(err) {
       console.log('Error Connecting to DB: ', err)
     } else {
       console.log('Connected to DB...')
-      run(); // start process
+      run(function(){
+        connection.close();
+        return callback();
+      });
     }
   });
   connection.on('error', function(err) {
@@ -33,9 +39,10 @@ var connection = new Connection(config);
 
   // Initialize the connection.
   connection.connect();
+}
 
 
-function run(){
+function run(cb){
   var request = new Request(storedProcedure, (err) => {
     if (err) {
       throw err;
@@ -48,8 +55,9 @@ function run(){
   // request.addParameter('inputVal', TYPES.VarChar, 'hello world');
   // request.addOutputParameter('outputCount', TYPES.Int);
 
-  request.on('returnValue', (paramName, value, metadata) => {
-    console.log(paramName + ' : ' + value);
+
+  request.on('requestCompleted',function(){
+    return cb();
   });
 
   connection.callProcedure(request);
