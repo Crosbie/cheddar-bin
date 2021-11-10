@@ -23,29 +23,33 @@ router.get('/phase3', function(req, res, next) {
 });
 
 
+
+/********** Nightly Jobs **********/
 // https://crontab.guru for cron time examples
 
 // runs at 00:00 everynight
 var phase1_job = new CronJob('0 0 * * *', function() {
   console.log('Phase1 job starting');
-  phase1script.start(noop);
+  // phase1script.start(noop);
 }, null, true, "Europe/Dublin", null, null);
 phase1_job.start();
 
 // runs at 00:15 everynight
 var phase2_job = new CronJob('15 0 * * *', function() {
   console.log('Phase2 job starting');
-  phase2script.start(noop);
+  // phase2script.start(noop);
 }, null, true, "Europe/Dublin", null, null);
 phase2_job.start();
 
 // runs at 00:45 everynight
 var phase3_job = new CronJob('45 0 * * *', function() {
   console.log('Phase3 job starting');
-  phase3script.start(noop);
+  // phase3script.start(noop);
 }, null, true, "Europe/Dublin", null, null);
 phase3_job.start();
 
 console.log('Set up nightly jobs schedule... DONE');
+
+/******************************/
 
 module.exports = router;
