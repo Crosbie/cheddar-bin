@@ -136,6 +136,7 @@ function convert(filepath, cb){
       console.log('Convert Error:',err);
       cb(err);
     } else {
+      // image.quality(60); // reduce quality to 60%
       image.write(filepath +".jpg");
       cb(null);
     }
