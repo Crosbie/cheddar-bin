@@ -85,6 +85,7 @@ function ajaxRequest(params) {
   req.done(function(response){
     console.log('filtered response',response);
     params.success(response);
+    $('#row-count')[0].innerText = response.length;
     bindRowsEvent();
   });
   //define fail callback
