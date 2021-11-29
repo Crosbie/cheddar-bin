@@ -68,8 +68,11 @@ function ajaxRequest(params) {
   var prod_time = $('#cb_prod_time')[0].value ? $('#cb_prod_time')[0].value + ":00" : null;
   var prod_time2 = $('#cb_prod_time2')[0].value ? $('#cb_prod_time2')[0].value + ":00" : null;
 
-  data.cb_plant_code = $('#cb_plant_code')[0].value || null;
   data.cb_year_code = $('#cb_year_code')[0].value || null;
+  data.cb_year_code2 = $('#cb_year_code2')[0].value || null;
+  data.cb_plant_code = $('#cb_plant_code')[0].value || null;
+  data.cb_day_code = $('#cb_day_code')[0].value || null;
+  data.cb_day_code2 = $('#cb_day_code2')[0].value || null;
   data.cb_prod_date = $('#cb_prod_date')[0].value || null;
   data.cb_prod_date2 = $('#cb_prod_date2')[0].value || null;
   data.cb_prod_time = prod_time;

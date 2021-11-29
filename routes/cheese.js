@@ -151,13 +151,13 @@ function filterCheese(data,cb){
 
   request.addParameter('year_code_n', TYPES.VarChar, null);
   request.addParameter('year_code_1', TYPES.VarChar, data["cb_year_code"] || null);
-  request.addParameter('year_code_2', TYPES.VarChar, data["cb_year_code"] || null);
+  request.addParameter('year_code_2', TYPES.VarChar, data["cb_year_code2"] || null);
   request.addParameter('plant_code_n', TYPES.VarChar, null);
   request.addParameter('plant_code_1', TYPES.VarChar, data["cb_plant_code"] || null);
   request.addParameter('plant_code_2', TYPES.VarChar, data["cb_plant_code"] || null);
   request.addParameter('day_number_n', TYPES.VarChar, null);
   request.addParameter('day_number_1', TYPES.VarChar, data["cb_day_code"] || null);
-  request.addParameter('day_number_2', TYPES.VarChar, data["cb_day_code"] || null);
+  request.addParameter('day_number_2', TYPES.VarChar, data["cb_day_code2"] || null);
   request.addParameter('pallet_n', TYPES.VarChar, null);
   request.addParameter('pallet_1', TYPES.VarChar, data["cb_pallet"] || null);
   request.addParameter('pallet_2', TYPES.VarChar, data["cb_pallet"] || null);
