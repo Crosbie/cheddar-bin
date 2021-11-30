@@ -78,6 +78,7 @@ function readCheese(cb){
   console.log('Reading rows from the CheeseBlocks Table...');
   var columns = [
     "cb_id",
+    "cb_day_number",
     "cb_plant_code",
     "cb_prod_date",
     "cb_prod_time",
