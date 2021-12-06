@@ -5,9 +5,13 @@ $(function() {
   var $table = $('#table')
   var $reset = $('#reset')
   var $filter = $('#filter')
+  var $export = $('#export')
 
 
-  $table.bootstrapTable();
+  $table.bootstrapTable({
+    exportDataType: $(this).val(),
+    exportTypes: ['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'pdf']
+  });
   $reset.click(function () {
     $('input').val(''); // clear all search boxes
     $table.bootstrapTable('refresh')
@@ -17,6 +21,10 @@ $(function() {
   // send DB call to fetch filtered results
   $filter.click(function(){
     $table.bootstrapTable('refresh')
+  })
+
+  $export.click(function(){
+    $table.bootstrapTable('export');
   })
 
  
@@ -71,6 +79,7 @@ function ajaxRequest(params) {
   data.cb_year_code = $('#cb_year_code')[0].value || null;
   data.cb_year_code2 = $('#cb_year_code2')[0].value || null;
   data.cb_plant_code = $('#cb_plant_code')[0].value || null;
+  data.cb_plant_code = $('#cb_plant_code2')[0].value || null;
   data.cb_day_code = $('#cb_day_code')[0].value || null;
   data.cb_day_code2 = $('#cb_day_code2')[0].value || null;
   data.cb_prod_date = $('#cb_prod_date')[0].value || null;
@@ -78,7 +87,9 @@ function ajaxRequest(params) {
   data.cb_prod_time = prod_time;
   data.cb_prod_time2 = prod_time2;
   data.cb_pallet = $('#cb_pallet')[0].value || null;
+  data.cb_pallet = $('#cb_pallet2')[0].value || null;
   data.cb_block = $('#cb_block')[0].value || null;
+  data.cb_block = $('#cb_block2')[0].value || null;
   data.cb_pass_fail = $('#cb_pass_fail')[0].value || null;
 
   console.log('filter-data',data);

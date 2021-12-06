@@ -1,9 +1,12 @@
+<div id="logo"><img src="images/logo.png"/></div>
 <h1>{{title}}</h1>
+
 
 
 <div id="toolbar">
   <button id="reset" class="btn btn-secondary">Reset</button>
-  <button id="filter" class="btn btn-primary">Filter</button><br/>
+  <button id="filter" class="btn btn-primary">Filter</button>
+  <button id="export" class="btn btn-primary">Export</button><br/>
   <table id="inputs">
     <tr>
       <td>
@@ -13,7 +16,8 @@
       </td>
       <td>
         {{!-- <label>Year Code</label> --}}
-        <input id="cb_plant_code" type="text" placeholder="Plant Code"/>
+        <input id="cb_plant_code" type="text" placeholder="Plant Code"/><br/>
+        <input id="cb_plant_code2" type="text" placeholder="Plant Code"/>
       </td>
       <td>
         <input id="cb_day_code" type="text" placeholder="Day Number"/><br/>
@@ -28,16 +32,17 @@
       <td>
         {{!-- <label>Production Time from:</label> --}}
       <input id="cb_prod_time" type="time" placeholder="Prod Time"/><br/>
-      {{!-- <label>Production Time to:</label> --}}
       <input id="cb_prod_time2" type="time" placeholder="Prod Time"/>
       </td>
       <td>
         {{!-- <label>Pallet Number</label> --}}
-        <input id="cb_pallet" type="text" placeholder="Pallet"/>
+        <input id="cb_pallet" type="text" placeholder="Pallet"/><br/>
+        <input id="cb_pallet2" type="text" placeholder="Pallet"/>
       </td>
       <td>
         {{!-- <label>Block Number</label> --}}
-        <input id="cb_block" type="text" placeholder="Block"/>
+        <input id="cb_block" type="text" placeholder="Block"/><br/>
+        <input id="cb_block2" type="text" placeholder="Block"/>
       </td>
       <td>
         {{!-- <label>Pass / Fail</label> --}}
@@ -49,6 +54,7 @@
 </div>
 <table
   id="table"
+  data-show-export="true"
   data-toggle="data"
   data-filter-control="true"
   data-show-search-clear-button="true"
@@ -56,9 +62,9 @@
   <thead>
     <tr>
       <th data-visible="false" data-field="cb_id">ID</th>
-      <th data-field="cb_year_code">Year Code</th>
-      <th data-field="cb_plant_code">Plant Code</th>
-      <th data-field="cb_day_number">Day Number</th>
+      <th data-sortable="true" data-field="cb_year_code">Year Code</th>
+      <th data-sortable="true" data-field="cb_plant_code">Plant Code</th>
+      <th data-sortable="true" data-field="cb_day_number">Day Number</th>
       <th data-sortable="true" data-field="cb_prod_date" data-formatter="dateFormatter">Prod Date</th>
       <th data-sortable="true" data-field="cb_prod_time" data-formatter="timeFormatter">Prod Time</th>
       <th data-sortable="true" data-field="cb_pallet">Pallet</th>
