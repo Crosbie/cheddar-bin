@@ -4,48 +4,52 @@
 
 
 <div id="toolbar">
-  <button id="reset" class="btn btn-secondary">Reset</button>
+  
   <button id="filter" class="btn btn-primary">Filter</button>
-  <button id="export" class="btn btn-primary">Export</button><br/>
+  <button id="sort" class="btn btn-primary">Sort</button>
+  <button id="export" class="btn btn-primary">Export</button>
+  <button id="clear" class="btn btn-secondary">Clear</button><br/>
   <table id="inputs">
     <tr>
       <td>
       {{!-- <label>Plant Code</label> --}}
+        <input id="cb_year_code_n" type="checkbox" value="1"/><br/>
         <input id="cb_year_code" type="text" placeholder="Year Code"/><br/>
         <input id="cb_year_code2" type="text" placeholder="Year Code"/>
       </td>
       <td>
         {{!-- <label>Year Code</label> --}}
+        <input id="cb_plant_code_n" type="checkbox" value="1"/><br/>
         <input id="cb_plant_code" type="text" placeholder="Plant Code"/><br/>
         <input id="cb_plant_code2" type="text" placeholder="Plant Code"/>
       </td>
       <td>
+        <input id="cb_day_code_n" type="checkbox" value="Y"/><br/>
         <input id="cb_day_code" type="text" placeholder="Day Number"/><br/>
         <input id="cb_day_code2" type="text" placeholder="Day Number"/>
       </td>
       <td>
-        {{!-- <label>Production Date from:</label> --}}
-        <input id="cb_prod_date" type="date" placeholder="Prod Date"/><br/>
-        {{!-- <label>Production Date to:</label> --}}
-        <input id="cb_prod_date2" type="date" placeholder="Prod Date"/>
-      </td>
-      <td>
-        {{!-- <label>Production Time from:</label> --}}
-      <input id="cb_prod_time" type="time" placeholder="Prod Time"/><br/>
-      <input id="cb_prod_time2" type="time" placeholder="Prod Time"/>
-      </td>
-      <td>
-        {{!-- <label>Pallet Number</label> --}}
+        <input id="cb_pallet_n" type="checkbox" value="1"/><br/>
         <input id="cb_pallet" type="text" placeholder="Pallet"/><br/>
         <input id="cb_pallet2" type="text" placeholder="Pallet"/>
       </td>
       <td>
-        {{!-- <label>Block Number</label> --}}
+        <input id="cb_block_n" type="checkbox" value="1"/><br/>
         <input id="cb_block" type="text" placeholder="Block"/><br/>
         <input id="cb_block2" type="text" placeholder="Block"/>
       </td>
       <td>
-        {{!-- <label>Pass / Fail</label> --}}
+        <input id="cb_prod_date_n" type="checkbox" value="1"/><br/>
+        <input id="cb_prod_date" type="date" placeholder="Prod Date"/><br/>
+        <input id="cb_prod_date2" type="date" placeholder="Prod Date"/>
+      </td>
+      <td>
+        <input id="cb_prod_time_n" type="checkbox" value="1"/><br/>
+        <input id="cb_prod_time" type="time" placeholder="Prod Time"/><br/>
+        <input id="cb_prod_time2" type="time" placeholder="Prod Time"/>
+      </td>
+      <td>
+        <input id="cb_pass_fail_n" type="checkbox" value="1"/><br/>
         <input id="cb_pass_fail" type="text" placeholder="Pass Fail"/>
       </td>
     
@@ -61,14 +65,15 @@
   data-ajax="ajaxRequest">
   <thead>
     <tr>
+      {{!-- <th data-visible="false" data-field="cb_id">ID</th> --}}
       <th data-visible="false" data-field="cb_id">ID</th>
       <th data-sortable="true" data-field="cb_year_code">Year Code</th>
       <th data-sortable="true" data-field="cb_plant_code">Plant Code</th>
       <th data-sortable="true" data-field="cb_day_number">Day Number</th>
-      <th data-sortable="true" data-field="cb_prod_date" data-formatter="dateFormatter">Prod Date</th>
-      <th data-sortable="true" data-field="cb_prod_time" data-formatter="timeFormatter">Prod Time</th>
       <th data-sortable="true" data-field="cb_pallet">Pallet</th>
       <th data-sortable="true" data-field="cb_block">Block</th>
+      <th data-sortable="true" data-field="cb_prod_date" data-formatter="dateFormatter">Prod Date</th>
+      <th data-sortable="true" data-field="cb_prod_time" data-formatter="timeFormatter">Prod Time</th>
       <th data-sortable="true" data-field="cb_pass_fail">Pass/Fail</th>
     </tr>
   </thead>
@@ -114,7 +119,7 @@
           <tr>
             <td class="key">Pass/Fail</td><td class="value" id="pass-fail"></td>
           </tr>
-          <tr><img id="cheese-img" src=""></tr>
+          <tr><td class="key">Image</td><td class="image"><img id="cheese-img" src=""></td></tr>
         </table>
       </div>
       <div class="modal-footer">

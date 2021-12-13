@@ -3,17 +3,19 @@ console.log('Loaded tableControls.js');
 
 $(function() {
   var $table = $('#table')
-  var $reset = $('#reset')
+  var $clear = $('#clear')
   var $filter = $('#filter')
   var $export = $('#export')
+  var $sort = $('#sort')
 
 
   $table.bootstrapTable({
     exportDataType: $(this).val(),
     exportTypes: ['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'pdf']
   });
-  $reset.click(function () {
-    $('input').val(''); // clear all search boxes
+  $clear.click(function () {
+    $('input[type="text"]').val(''); // clear all search boxes
+    $('input[type="checkbox"]').prop('checked',false);
     $table.bootstrapTable('refresh')
     bindRowsEvent()
   })
@@ -24,7 +26,12 @@ $(function() {
   })
 
   $export.click(function(){
-    $table.bootstrapTable('export');
+    // $table.bootstrapTable('export');
+    alert('Not yet implemented!');
+  })
+
+  $sort.click(function(){
+    alert('Not yet implemented!');
   })
 
  
@@ -36,7 +43,7 @@ $(function() {
   //   txt = txt.toUpperCase();
   //   console.log('txt',txt);
   //   if(txt.length === 0){
-  //     $table.bootstrapTable('filterBy', {}) // reset table filter
+  //     $table.bootstrapTable('filterBy', {}) // clear table filter
   //   } else {
   //     $table.bootstrapTable('filterBy', {
   //       [id]: txt
@@ -56,7 +63,7 @@ $(function() {
     // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
     // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
     var modal = $(this)
-    modal.find('.modal-title').text('New message to ' + recipient)
+    modal.find('.modal-title').text('Cheese Block');
     modal.find('.modal-body #year-code').text(data.yearCode);
     modal.find('.modal-body #plant-code').text(data.plantCode);
     modal.find('.modal-body #day-number').text(data.dayNum);
@@ -65,6 +72,21 @@ $(function() {
     modal.find('.modal-body #pallet').text(data.pallet);
     modal.find('.modal-body #block').text(data.block);
     modal.find('.modal-body #pass-fail').text(data.passFail);
+    
+
+    // fetch image
+    var req = $.post("/cheese/image", {cb_id: data["cb_id"]});
+  //define success callback
+  req.done(function(response){
+    console.log('image response',response);
+    modal.find('.modal-body #cheese-img').attr('src','/images/cheese_block.jpg');
+    // modal.find('.modal-body #cheese-img').attr('src','/images/test.jpg');
+  });
+  //define fail callback
+  req.fail(function(err){
+    console.log('fetch image error:',err);
+    alert('Error fetching image:',err);
+  })
   })
 })
 
@@ -73,6 +95,7 @@ function bindRowsEvent(){
     $('#table tr').off('click');
     $('#table tr').on('click',function(e){
       var row = $(e.currentTarget)[0];
+      var index = $(row).attr('data-index');
       window.modal_data = {
         yearCode: $(row).find('td')[0].innerText,
         plantCode: $(row).find('td')[1].innerText,
@@ -82,7 +105,10 @@ function bindRowsEvent(){
         pallet: $(row).find('td')[5].innerText,
         block: $(row).find('td')[6].innerText,
         passFail: $(row).find('td')[7].innerText,
+        cb_id: window.response[index]["cb_id"]
       };
+
+      // fetch image
       console.log(row);
       $('#myModal').modal("show")
     })
@@ -109,20 +135,35 @@ function ajaxRequest(params) {
   var prod_time = $('#cb_prod_time')[0].value ? $('#cb_prod_time')[0].value + ":00" : null;
   var prod_time2 = $('#cb_prod_time2')[0].value ? $('#cb_prod_time2')[0].value + ":00" : null;
 
+  data.cb_year_code_n = $('#cb_year_code_n')[0].checked ? "Y" : null;
   data.cb_year_code = $('#cb_year_code')[0].value || null;
   data.cb_year_code2 = $('#cb_year_code2')[0].value || null;
+
+  data.cb_plant_code_n = $('#cb_plant_code_n')[0].checked ? "Y" : null;
   data.cb_plant_code = $('#cb_plant_code')[0].value || null;
-  data.cb_plant_code = $('#cb_plant_code2')[0].value || null;
+  data.cb_plant_code2 = $('#cb_plant_code2')[0].value || null;
+
+  data.cb_day_code_n = $('#cb_day_code_n')[0].checked ? "Y" : null;
   data.cb_day_code = $('#cb_day_code')[0].value || null;
   data.cb_day_code2 = $('#cb_day_code2')[0].value || null;
+
+  data.cb_prod_date_n = $('#cb_prod_date_n')[0].checked ? "Y" : null;
   data.cb_prod_date = $('#cb_prod_date')[0].value || null;
   data.cb_prod_date2 = $('#cb_prod_date2')[0].value || null;
+
+  data.cb_prod_time_n = $('#cb_prod_time_n')[0].checked ? "Y" : null;
   data.cb_prod_time = prod_time;
   data.cb_prod_time2 = prod_time2;
+
+  data.cb_pallet_n = $('#cb_pallet_n')[0].checked ? "Y" : null;
   data.cb_pallet = $('#cb_pallet')[0].value || null;
-  data.cb_pallet = $('#cb_pallet2')[0].value || null;
+  data.cb_pallet2 = $('#cb_pallet2')[0].value || null;
+
+  data.cb_block_n = $('#cb_block_n')[0].checked ? "Y" : null;
   data.cb_block = $('#cb_block')[0].value || null;
-  data.cb_block = $('#cb_block2')[0].value || null;
+  data.cb_block2 = $('#cb_block2')[0].value || null;
+
+  data.cb_pass_fail_n = $('#cb_pass_fail_n')[0].checked ? "Y" : null;
   data.cb_pass_fail = $('#cb_pass_fail')[0].value || null;
 
   console.log('filter-data',data);
@@ -132,6 +173,7 @@ function ajaxRequest(params) {
   req.done(function(response){
     console.log('filtered response',response);
     params.success(response);
+    window.response = response;
     $('#row-count')[0].innerText = response.length;
     bindRowsEvent();
   });
