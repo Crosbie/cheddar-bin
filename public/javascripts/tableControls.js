@@ -116,7 +116,8 @@ $(function() {
   //define success callback
   req.done(function(response){
     console.log('image response',response);
-    modal.find('.modal-body #cheese-img').attr('src','/images/cheese_block.jpg');
+    var d = new Date();
+    modal.find('.modal-body #cheese-img').attr('src','/images/cheese_block.jpg?'+d.getTime());
     // modal.find('.modal-body #cheese-img').attr('src','/images/test.jpg');
   });
   //define fail callback
