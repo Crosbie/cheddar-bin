@@ -7,6 +7,8 @@ $(function() {
   var $filter = $('#filter')
   var $export = $('#export')
   var $sort = $('#sort')
+  var $next = $('#next-btn')
+  var $prev = $('#prev-btn')
 
 
   $table.bootstrapTable({
@@ -34,6 +36,40 @@ $(function() {
     alert('Not yet implemented!');
   })
 
+  $next.click(function(){
+    var index = parseInt(window.selected_index);
+    index = index + 1;
+    $('#myModal').modal("hide");
+    var row = $('#table tr[data-index="'+index+'"]');
+    grabRowData(row,index);
+    window.selected_index = index;
+    $('#myModal').modal("show");
+  })
+
+  $prev.click(function(){
+    var index = parseInt(window.selected_index);
+    index = index - 1;
+    $('#myModal').modal("hide");
+    var row = $('#table tr[data-index="'+index+'"]');
+    grabRowData(row,index);
+    window.selected_index = index;
+    $('#myModal').modal("show");
+  })
+
+
+  function grabRowData(row,index){
+    window.modal_data = {
+      yearCode: $(row).find('td')[0].innerText,
+      plantCode: $(row).find('td')[1].innerText,
+      dayNum: $(row).find('td')[2].innerText,
+      pallet: $(row).find('td')[3].innerText,
+      block: $(row).find('td')[4].innerText,
+      prodDate: $(row).find('td')[5].innerText,
+      prodTime: $(row).find('td')[6].innerText,
+      passFail: $(row).find('td')[7].innerText,
+      cb_id: window.response[index]["cb_id"]
+    };
+  }
  
   
   // Filter table on keyup
@@ -54,10 +90,11 @@ $(function() {
 
   bindRowsEvent();
 
+  $('#myModal').on('hide.bs.modal', function (event) {
+    window.selected_index = null;
+  })
+
   $('#myModal').on('show.bs.modal', function (event) {
-    var button = $(event.relatedTarget) // Button that triggered the modal
-    var recipient = 'EOIN' // Extract info from data-* attributes
-    console.log(button);
     console.log(window.modal_data);
     var data = window.modal_data;
     // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
@@ -96,14 +133,15 @@ function bindRowsEvent(){
     $('#table tr').on('click',function(e){
       var row = $(e.currentTarget)[0];
       var index = $(row).attr('data-index');
+      window.selected_index = index;
       window.modal_data = {
         yearCode: $(row).find('td')[0].innerText,
         plantCode: $(row).find('td')[1].innerText,
         dayNum: $(row).find('td')[2].innerText,
-        prodDate: $(row).find('td')[3].innerText,
-        prodTime: $(row).find('td')[4].innerText,
-        pallet: $(row).find('td')[5].innerText,
-        block: $(row).find('td')[6].innerText,
+        pallet: $(row).find('td')[3].innerText,
+        block: $(row).find('td')[4].innerText,
+        prodDate: $(row).find('td')[5].innerText,
+        prodTime: $(row).find('td')[6].innerText,
         passFail: $(row).find('td')[7].innerText,
         cb_id: window.response[index]["cb_id"]
       };
