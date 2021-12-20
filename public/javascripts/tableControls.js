@@ -13,11 +13,16 @@ $(function() {
 
   $table.bootstrapTable({
     exportDataType: $(this).val(),
-    exportTypes: ['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'pdf']
+    exportTypes: ['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'pdf'],
+    showExport: 'true'
   });
   $clear.click(function () {
     $('input[type="text"]').val(''); // clear all search boxes
     $('input[type="checkbox"]').prop('checked',false);
+    $('#criteria1').val('');
+    $('#criteria2').val('');
+    $('#criteria3').val('');
+    $('#criteria4').val('');
     $table.bootstrapTable('refresh')
     bindRowsEvent()
   })
@@ -28,12 +33,11 @@ $(function() {
   })
 
   $export.click(function(){
-    // $table.bootstrapTable('export');
-    alert('Not yet implemented!');
+    $table.tableExport({type:'csv'});
   })
 
   $sort.click(function(){
-    alert('Not yet implemented!');
+    $('#sortModal').modal("show")
   })
 
   $next.click(function(){
@@ -204,6 +208,40 @@ function ajaxRequest(params) {
 
   data.cb_pass_fail_n = $('#cb_pass_fail_n')[0].checked ? "Y" : null;
   data.cb_pass_fail = $('#cb_pass_fail')[0].value || null;
+
+  var orderString = [];
+  if($('#criteria1').val() !== ''){
+    var str = $('#criteria1').val();
+    if($('#criteria1-order').val() == 1){
+      str += ' desc';
+    }
+    orderString.push(str);
+  }
+  if($('#criteria2').val() !== ''){
+    var str = $('#criteria2').val();
+    if($('#criteria2-order').val() == 1){
+      str += ' desc';
+    }
+    orderString.push(str)
+  }
+  if($('#criteria3').val() !== ''){
+    var str = $('#criteria3').val();
+    if($('#criteria3-order').val() == 1){
+      str += ' desc';
+    }
+    orderString.push(str)
+  }
+  if($('#criteria4').val() !== ''){
+    var str = $('#criteria4').val();
+    if($('#criteria4-order').val() == 1){
+      str += ' desc';
+    }
+    orderString.push(str)
+  }
+  orderString = orderString.join(',');
+
+  data.order_by = orderString;
+  console.log('orderString', orderString);
 
   console.log('filter-data',data);
     

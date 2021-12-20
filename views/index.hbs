@@ -131,3 +131,100 @@
   <button id="prev-btn" class="btn btn-lg btn-success">Prev</button>
 </div>
 
+
+<div id="sortModal" class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Sort Criteria</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table>
+          <tr>
+            <td class="key">Criteria 1</td>
+            <td class="value">
+              <select id="criteria1">
+                <option value=""></option>
+                <option value="cb_day_number">Day Number</option>
+                <option value="cb_pallet">Pallet</option>
+                <option value="cb_block">Block</option>
+                <option value="cb_year_code">Year Code</option>
+                <option value="cb_prod_date">Prod Date</option>
+                <option value="cb_prod_time">Prod Time</option>
+                <option value="cb_pass_fail">Pass/Fail</option>
+              </select></td>
+              <td><select id="criteria1-order">
+                <option value="0">asc</option>
+                <option value="1">desc</option>
+                </select>
+              </td>
+          </tr>
+          <tr>
+            <td class="key">Criteria 2</td>
+            <td class="value">
+              <select id="criteria2">
+                <option value=""></option>
+                <option value="cb_day_number">Day Number</option>
+                <option value="cb_pallet">Pallet</option>
+                <option value="cb_block">Block</option>
+                <option value="cb_year_code">Year Code</option>
+                <option value="cb_prod_date">Prod Date</option>
+                <option value="cb_prod_time">Prod Time</option>
+                <option value="cb_pass_fail">Pass/Fail</option>
+              </select></td>
+              <td><select id="criteria2-order">
+                <option value="0">asc</option>
+                <option value="1">desc</option>
+                </select>
+              </td>
+          </tr>
+          <tr>
+            <td class="key">Criteria 3</td>
+            <td class="value">
+              <select id="criteria3">
+                <option value=""></option>
+                <option value="cb_day_number">Day Number</option>
+                <option value="cb_pallet">Pallet</option>
+                <option value="cb_block">Block</option>
+                <option value="cb_year_code">Year Code</option>
+                <option value="cb_prod_date">Prod Date</option>
+                <option value="cb_prod_time">Prod Time</option>
+                <option value="cb_pass_fail">Pass/Fail</option>
+              </select></td>
+              <td><select id="criteria3-order">
+                <option value="0">asc</option>
+                <option value="1">desc</option>
+                </select>
+              </td>
+          </tr>
+          <tr>
+            <td class="key">Criteria 4</td>
+            <td class="value">
+              <select id="criteria4">
+                <option value=""></option>
+                <option value="cb_day_number">Day Number</option>
+                <option value="cb_pallet">Pallet</option>
+                <option value="cb_block">Block</option>
+                <option value="cb_year_code">Year Code</option>
+                <option value="cb_prod_date">Prod Date</option>
+                <option value="cb_prod_time">Prod Time</option>
+                <option value="cb_pass_fail">Pass/Fail</option>
+              </select></td>
+              <td><select id="criteria4-order">
+                <option value="0">asc</option>
+                <option value="1">desc</option>
+                </select>
+              </td>
+          </tr>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+

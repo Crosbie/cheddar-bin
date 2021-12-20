@@ -213,7 +213,7 @@ function filterCheese(data,cb){
   request.addParameter('pass_fail_n', TYPES.VarChar, data["cb_pass_fail_n"] || null);
   request.addParameter('pass_fail_1', TYPES.VarChar, data["cb_pass_fail"] || null);
   request.addParameter('pass_fail_2', TYPES.VarChar, null);
-  request.addParameter('order_by', TYPES.VarChar, null);
+  request.addParameter('order_by', TYPES.VarChar, data["order_by"] || null);
   
 
   // request.addOutputParameter('id', TYPES.Int);
