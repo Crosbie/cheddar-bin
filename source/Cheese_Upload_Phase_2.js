@@ -52,9 +52,6 @@ module.exports.start = function(callback){
   connection.on('error', function(err) {
     console.log('Error2: ', err)
   });
-  connection.on('debug', function(err) {
-    console.log('debug: ', err)
-  });
 
   // Initialize the connection.
   connection.connect();
@@ -71,22 +68,19 @@ function run(dir,callback){
       if(DEV_FLAG){
         workingDir = "./test/";
       }
-      
-      console.log("workingDir:", workingDir);
 
       fs.readdir(workingDir, function(readErr,files){
         if(readErr){
-          console.log('HERE',readErr);
           return cb(readErr);
         }
-        console.log('FILES:',files);
+        // console.log('FILES:',files);
         var images = [];
         for(var i=0;i<files.length;i++){
           if(files[i].indexOf('.jpg') > 0 ){
             images.push(workingDir + '/' + files[i]);
           }
         }
-        console.log('FILES To Insert',images)
+        // console.log('FILES To Insert',images)
         cb(null, images);
       })
     },
@@ -113,7 +107,7 @@ function run(dir,callback){
             console.warn("\n No Target folder found, leaving images in source \n");
             return cb(null,images);
           } else {
-            console.log('TARGET DIR', TARGET);
+            // console.log('TARGET DIR', TARGET);
           }
 
           // move each image to Target and collect array of new file locations to pass to next function
@@ -133,12 +127,11 @@ function run(dir,callback){
             
             fs.rename(image, newPath, function (err) {
               if (err) throw err
-              console.log('Successfully moved image!');
+              // console.log('Successfully moved image!');
               movedFiles.push(newPath);
               done();
             })
           }, function(moveErr){
-            console.log('movedFiles',movedFiles);
             cb(moveErr,movedFiles);
           })
         }
@@ -180,7 +173,6 @@ function insert(file, cb){
     var filenameDate = filenameSections.slice(2,5).join('/');
     var filenameTime = filenameSections.slice(5,8).join(':');
 
-    console.log('insert cheese');
 
     const sql = 'INSERT INTO Cheese_Blocks (' +
     '[cb_plant_code],' +
@@ -200,7 +192,6 @@ function insert(file, cb){
       console.error('Insert Error:',err);
       return cb(err);
     }
-    console.log('input success!', filename);
     return cb(null);
   });
 
@@ -208,12 +199,6 @@ function insert(file, cb){
   var prodDate = new Date(filenameDate);
   var UTCDate = new Date(prodDate.getTime() - (prodDate.getTimezoneOffset() * 60000));
 
-  console.log('\n\n*******')
-  console.log('filename',filenameDate);
-  console.log('prodDate',prodDate);
-  console.log('UTC Date',UTCDate);
-  console.log('*******')
-  console.log('*******\n\n')
   
   // format date as YYYYMMDD
   // var formatedDate = prodDate.getYear() + ("0" + (prodDate.getMonth() + 1)).slice(-2) + ("0" + prodDate.getDate()).slice(-2)
@@ -240,8 +225,6 @@ function insert(file, cb){
 }
 
 function readDirs(sourceTarget,cb){
-  console.log('Reading rows from the Directories Table...');
-
       // Read all rows from table
       request = new Request(
         "SELECT * FROM Cheese_Directories WHERE cd_source_target = '"+
@@ -250,8 +233,6 @@ function readDirs(sourceTarget,cb){
         if (err) {
             console.error('DB Read error:',err);
             // return cb(err);
-        } else {
-            console.log(rowCount + ' row(s) returned');
         }
       });
 
@@ -261,13 +242,11 @@ function readDirs(sourceTarget,cb){
         var rowObj = {}
           columns.forEach(function(column) {
               if (column.value === null) {
-                  console.log('NULL');
               } else {
                   rowObj[column.metadata.colName] =column.value;
               }
           });
           result.push(rowObj);
-          console.log(result);
       });
       
       // return CB function on end of request

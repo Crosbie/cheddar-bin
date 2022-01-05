@@ -17,14 +17,13 @@ function noop(){}; // end function call
 router.post('/filter', function(req, res){
   connection = new Connection(config);
   var payload = req.body;
-  console.log('payload',payload);
+  // console.log('payload',payload);
   // 
   // Setup event handler when the connection is established. 
   connection.on('connect', function(err) {
     if(err) {
       console.log('Error Connecting to DB: ', err)
     } else {
-      console.log('Connected to DB...');
       filterCheese(payload,function(err,data){
         connection.close();
         if(err){
@@ -52,7 +51,6 @@ router.post('/image', function(req, res, next) {
     if(err) {
       console.log('Error Connecting to DB: ', err)
     } else {
-      console.log('Connected to DB...');
       readCheeseImage(payload,function(err,data){
         connection.close();
         if(err){
@@ -66,9 +64,9 @@ router.post('/image', function(req, res, next) {
   connection.on('error', function(err) {
     console.log('Error2: ', err)
   });
-  connection.on('debug', function(err) {
-    console.log('debug: ', err)
-  });
+  // connection.on('debug', function(err) {
+  //   console.log('debug: ', err)
+  // });
 
   // Initialize the connection.
   connection.connect();
@@ -84,7 +82,6 @@ router.get('/list', function(req, res, next) {
     if(err) {
       console.log('Error Connecting to DB: ', err)
     } else {
-      console.log('Connected to DB...');
       readCheese(function(err,data){
         connection.close();
         if(err){
@@ -129,7 +126,7 @@ function readCheese(cb){
     if (err) {
         console.error('DB Read error:',err);
     } else {
-        console.log(rowCount + ' row(s) returned');
+        // console.log(rowCount + ' row(s) returned');
     }
   });
 
@@ -150,7 +147,6 @@ function readCheese(cb){
   // return CB function on end of request
   // this ends the fetchDir function
   request.on('requestCompleted',function(){
-    console.log('result',result);
     return cb(null,result);
   });
 
@@ -165,11 +161,10 @@ function filterCheese(data,cb){
       throw err;
     }
 
-    console.log('DONE!');
     connection.close();
   });
 
-  console.log('data',data)
+  // console.log('data',data)
 
   /* Accepted fields:
   @year_code_n  CHAR(1), @year_code_1  CHAR(1),      @year_code_2  CHAR(1),
@@ -242,8 +237,8 @@ function filterCheese(data,cb){
 
 
 function readCheeseImage(data,cb){
-  console.log('Reading image from the CheeseBlocks Table...');
-  console.log('id',data["cb_id"]);
+  // console.log('Reading image from the CheeseBlocks Table...');
+  // console.log('id',data["cb_id"]);
   // Read all rows from table
   request = new Request(
     "SELECT * FROM Cheese_Blocks WHERE cb_id='"+ data['cb_id'] + "'",
@@ -251,7 +246,7 @@ function readCheeseImage(data,cb){
     if (err) {
         console.error('DB Read error:',err);
     } else {
-        console.log(rowCount + ' row(s) returned');
+        // console.log(rowCount + ' row(s) returned');
     }
   });
 
@@ -272,19 +267,14 @@ function readCheeseImage(data,cb){
   // return CB function on end of request
   // this ends the fetchDir function
   request.on('requestCompleted',function(){
-    console.log('result',result);
 
     // write image to FileSystem;
     
-  
-    console.log("saving cheese image");
     var imageData = result[0]["cb_block_image"];
     fs.writeFile("public/images/cheese_block.jpg", imageData, (err) => {
       if (err)
         console.log(err);
       else {
-        console.log("File written successfully\n");
-        console.log("The written has the following contents:");
         cb(null,result);
       }
     });

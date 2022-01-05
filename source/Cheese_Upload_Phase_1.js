@@ -56,9 +56,6 @@ module.exports.start = function(callback){
   connection.on('error', function(err) {
     console.log('Error2: ', err)
   });
-  connection.on('debug', function(err) {
-    console.log('debug: ', err)
-  });
 
   // Initialize the connection.
   connection.connect();
@@ -76,20 +73,19 @@ function run(dir, callback){
         workingDir = "./test/";
       }
       
-      console.log("workingDir:", workingDir);
 
       fs.readdir(workingDir, function(readErr,files){
         if(readErr){
           return cb(readErr);
         }
-        console.log('FILES:',files);
+        // console.log('FILES:',files);
         var bmps = [];
         for(var i=0;i<files.length;i++){
           if(files[i].indexOf('.bmp') > 0 && files[i].indexOf('.DONE') < 0){
             bmps.push(workingDir + '/' + files[i]);
           }
         }
-        console.log('BMPS',bmps)
+        // console.log('BMPS',bmps)
         cb(null, bmps);
       })
     },
@@ -129,7 +125,7 @@ function noop(){}
 function convert(filepath, cb){
   const Jimp = require("jimp");
   
-  console.log("convert bmp to jpg", filepath);
+  // console.log("convert bmp to jpg", filepath);
 
   Jimp.read(filepath + ".bmp", function (err, image) {
     if (err) {
@@ -153,7 +149,7 @@ function readDirs(cb){
         if (err) {
             cb(err);
         } else {
-            console.log(rowCount + ' row(s) returned');
+            // console.log(rowCount + ' row(s) returned');
         }
       });
 
@@ -163,13 +159,13 @@ function readDirs(cb){
         var rowObj = {}
           columns.forEach(function(column) {
               if (column.value === null) {
-                  console.log('NULL');
+                  // console.log('NULL');
               } else {
                   rowObj[column.metadata.colName] =column.value;
               }
           });
           result.push(rowObj);
-          console.log(result);
+          // console.log(result);
       });
       
       // return CB function on end of request

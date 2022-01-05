@@ -33,9 +33,6 @@ module.exports.start = function(callback){
   connection.on('error', function(err) {
     console.log('Error2: ', err)
   });
-  connection.on('debug', function(err) {
-    console.log('debug: ', err)
-  });
 
   // Initialize the connection.
   connection.connect();
