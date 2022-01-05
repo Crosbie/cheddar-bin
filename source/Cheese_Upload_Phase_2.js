@@ -7,9 +7,9 @@ http://tediousjs.github.io/tedious/getting-started.html
 */
 
 var DEV_FLAG = false;
-console.log('\n\n*****************');
-console.log('DEV_FLAG:',DEV_FLAG);
-console.log('*****************\n\n');
+// console.log('\n\n*****************');
+// console.log('DEV_FLAG:',DEV_FLAG);
+// console.log('*****************\n\n');
 
 var tedious = require('tedious');
 

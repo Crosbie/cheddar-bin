@@ -7,9 +7,9 @@ http://tediousjs.github.io/tedious/getting-started.html
 var tedious = require('tedious');
 
 var DEV_FLAG = false;
-console.log('\n\n*****************');
-console.log('DEV_FLAG:',DEV_FLAG);
-console.log('*****************\n\n');
+// console.log('\n\n*****************');
+// console.log('DEV_FLAG:',DEV_FLAG);
+// console.log('*****************\n\n');
 
 var fileDirs = []; // boolean array to flag when a Dir has been processed
 // eg. [true,false,false]
