@@ -1,11 +1,17 @@
 var express = require('express');
 var router = express.Router();
 var CronJob = require('cron').CronJob;
+var phase0script = require('../source/Cheese_Upload_Phase_0.js');
 var phase1script = require('../source/Cheese_Upload_Phase_1.js');
 var phase2script = require('../source/Cheese_Upload_Phase_2.js');
 var phase3script = require('../source/Cheese_Upload_Phase_3.js');
 
 function noop() {};
+
+router.get('/phase0', function(req, res, next) {
+  phase0script.start(noop);
+  res.json({"status": "Phase 0 job started..."});
+});
 
 router.get('/phase1', function(req, res, next) {
   phase1script.start(noop);
