@@ -129,19 +129,19 @@ function run(dir, callback){
           // Use pass/fail SOURCE dir depending on which XRAY dir we are using
           for(var i=0;i<dirs.length;i++){
             if(dirs[i].cd_pass_fail === thisDirPassFail){
-              TARGET = dirs[i].cd_path;
+              SOURCE = dirs[i].cd_path;
             }
           }
 
           if (SOURCE===""){
             console.warn("\n No SOURCE folder found, leaving images in Xray dir \n");
-            return cb(null,images);
+            return cb(null,files);
           } else {
             // console.log('SOURCE DIR', SOURCE);
           }
 
           // move each image to SOURCE and collect array of new file locations to pass to next function
-          async.each(images, function(image,done){
+          async.each(files, function(image,done){
             var filename = image.replace(/^.*(\\|\/|\:)/, '');
 
             var newPath = SOURCE + '/' + filename;
