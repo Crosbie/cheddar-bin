@@ -1,6 +1,7 @@
 //filesystem library
 var fs = require('fs');
 var async = require('async');
+var path = require('path');
 /* Nodejs SQLServer driver, info available here: 
 http://tediousjs.github.io/tedious/getting-started.html
 */
