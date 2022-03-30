@@ -8,6 +8,7 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var cheeseRouter = require('./routes/cheese');
 var scriptRouter = require('./routes/scripts');
+var mailRouter = require('./routes/mail');
 
 var app = express();
 
@@ -26,6 +27,7 @@ app.use(express.static(__dirname + '/node_modules/bootstrap/dist')); // include 
 app.use('/', indexRouter);
 app.use('/cheese', cheeseRouter);
 app.use('/scripts', scriptRouter);
+app.use('/mail', mailRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -271,13 +271,18 @@ function readCheeseImage(data,cb){
     // write image to FileSystem;
     
     var imageData = result[0]["cb_block_image"];
-    fs.writeFile("public/images/cheese_block.jpg", imageData, (err) => {
-      if (err)
-        console.log(err);
-      else {
-        cb(null,result);
-      }
-    });
+    var b64 = Buffer.from(imageData).toString('base64');
+    result[0].b64 = b64;
+    return cb(null,result);
+
+    // no need to write to file as we pass b64 string to client
+    // fs.writeFile("public/images/cheese_block.jpg", imageData, (err) => {
+    //   if (err)
+    //     console.log(err);
+    //   else {
+    //     cb(null,result);
+    //   }
+    // });
   });
 
   // Execute SQL statement
