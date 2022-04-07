@@ -5,6 +5,7 @@ var phase0script = require('../source/Cheese_Upload_Phase_0.js');
 var phase1script = require('../source/Cheese_Upload_Phase_1.js');
 var phase2script = require('../source/Cheese_Upload_Phase_2.js');
 var phase3script = require('../source/Cheese_Upload_Phase_3.js');
+var phase4script = require('../source/Cheese_Upload_Phase_4.js');
 
 function noop() {};
 
@@ -26,6 +27,11 @@ router.get('/phase2', function(req, res, next) {
 router.get('/phase3', function(req, res, next) {
   phase3script.start(noop);
   res.json({"status": "Phase 3 job started..."});
+});
+
+router.get('/phase4', function(req, res, next) {
+  phase4script.start(noop);
+  res.json({"status": "Phase 4 job started..."});
 });
 
 
