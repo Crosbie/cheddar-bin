@@ -171,7 +171,7 @@ function readCheeseParams(cb){
 
       // Read all rows from table
       request = new Request(
-        "SELECT * FROM Cheese_Parameters WHERE cp_key = 'DAYS_TO_RETAIN_IMAGES';",
+        "SELECT cp_value FROM Cheese_Parameters WHERE cp_key = 'DAYS_TO_RETAIN_IMAGES';",
         function(err, rowCount, rows) {
         if (err) {
             cb(err);
@@ -180,22 +180,12 @@ function readCheeseParams(cb){
 
       // Print the rows read
       var result = [];
-      request.on('row', function(columns) {
-        console.log('data',columns);
-        var rowObj = {}
-          columns.forEach(function(column) {
-              if (column.value === null) {
-                  console.log('NULL');
-              } else {
-                  rowObj[column.metadata.colName] =column.value;
-              }
-          });
-          result.push(rowObj);
-          console.log(result);
+      request.on('row', function(data) {
+          result = data[0].value;
       });
       
       request.on('requestCompleted',function(){
-        return cb(null,result[0]);
+        return cb(null,result);
       });
 
       // Execute SQL statement

@@ -14,6 +14,8 @@ insert into [dbo].[Cheese_Parameters] (cp_key, cp_value) values ('DAYCODE_START_
 go
 insert into [dbo].[Cheese_Parameters] (cp_key, cp_value) values ('BLOCKS_PER_PALLET','50')
 go
+insert into [dbo].[Cheese_Parameters] (cp_key,cp_value) values ('DAYS_TO_RETAIN_IMAGES',30);
+go
 
 DELETE FROM [dbo].[Cheese_Directories]
 insert into [dbo].[Cheese_Directories] (cd_path, cd_pass_fail, cd_source_target, cd_active, cd_sort_order) values ('./test/source/pass', 'P', 'S', 'Y', 10)
