@@ -100,7 +100,7 @@ function run(dir, callback){
       async.each(files,function(file,done) {
         
         if(fileAge(file) >= MAX_FILE_AGE){
-          fs.unlink(file,done); // delete image file
+          // fs.unlink(file,done); // delete image file
         }
         
       }, function(deleteErr){
@@ -121,9 +121,12 @@ function noop(){}
 
 function fileAge(file){
   var today = new Date();
-  var creationDate = fs.statSync(file).birthtime;
+  // var creationDate = fs.statSync(file).birthtime; // file creation date
+  var creationDate = fs.statSync(file).mtime; // file modified date
   var ageMs = today.getTime() - creationDate.getTime();
   var ageDays = ageMs/ (1000 * 60 * 60 * 24);
+  // console.log('file',file);
+  // console.log('file age',ageDays);
   return ageDays;
 }
 
