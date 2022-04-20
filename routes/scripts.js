@@ -67,6 +67,14 @@ var phase3_job = new CronJob('0 2 * * *', function() {
 }, null, true, "Europe/Dublin", null, null);
 phase3_job.start();
 
+// runs at 03:00 everynight
+var phase4_job = new CronJob('0 3 * * *', function() {
+  console.log('Phase4 job starting');
+  phase4script.start(noop);
+}, null, true, "Europe/Dublin", null, null);
+phase4_job.start();
+
+
 console.log('Set up nightly jobs schedule... DONE');
 
 /******************************/
