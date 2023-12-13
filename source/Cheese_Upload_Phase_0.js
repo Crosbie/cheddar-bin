@@ -149,16 +149,30 @@ function run(dir, callback){
             
 
             newPath = path.normalize(newPath);
-            
+
+            // rename doesn't work on Wexford server, need to do copy & remove instead
+            /*
             fs.rename(image, newPath, function (err) {
-              if (err) throw err
-              // console.log('Successfully moved image!');
+                if (err) throw err
+                // console.log('Successfully moved image!');
+                movedFiles.push(newPath);
+                done();
+              })
+            */
+            
+            fs.copyFile(image, newPath, function(err){
+              if(err) throw err;
+
               movedFiles.push(newPath);
-              done();
+              fs.rm(image, function(err){
+                if(err) console.error("Error removing old image: %s",image);
+
+                done();
+              });
+            
+            }, function(moveErr){
+              cb(moveErr,movedFiles);
             })
-          }, function(moveErr){
-            cb(moveErr,movedFiles);
-          })
         }
       })
     }
