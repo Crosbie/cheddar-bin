@@ -169,10 +169,10 @@ function run(dir, callback){
 
                 done();
               });
-            
             }, function(moveErr){
               cb(moveErr,movedFiles);
             })
+          })
         }
       })
     }
