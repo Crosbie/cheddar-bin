@@ -119,6 +119,11 @@ function run(dir, callback){
 
     // Move Xray bmps from Xray dir to available Source dir
     function doMove(files, cb){
+      // if no files, skip
+      if(files.length ===0){
+        return cb(null,[]);
+      }
+      
       // get Source dirs from DB
       readDirs("S",function(err,dirs){
         if (err){
@@ -164,11 +169,7 @@ function run(dir, callback){
               if(err) throw err;
 
               movedFiles.push(newPath);
-              fs.rm(image, function(err){
-                if(err) console.error("Error removing old image: %s",image);
-
-                done();
-              });
+              fs.rm(image, done);
             }, function(moveErr){
               cb(moveErr,movedFiles);
             })
