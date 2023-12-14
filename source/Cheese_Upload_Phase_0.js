@@ -96,27 +96,6 @@ function run(dir, callback){
       })
     },
 
-    // function doConvert(files, cb){
-    //   async.each(files,function(file,done) {
-    //     file = file.replace('.bmp','');
-    //     convert(file,done)
-    //   }, function(convertErr){
-    //     cb(convertErr, files);
-    //   });
-    // },
-
-    // function doCleanup(files, cb){
-    //   async.each(files,function(file,done) {
-    //     // rename BMP file
-    //     file = file.replace('.bmp','.jpg');
-    //     // fs.rename(file,file+'.DONE',noop); // save file as .jpg.DONE
-    //     file = file.replace('.jpg','.bmp');
-    //     fs.unlink(file,done); // delete .bmp file
-    //   }, function(deleteErr){
-    //     cb(deleteErr,files);
-    //   });
-    // },
-
     // Move Xray bmps from Xray dir to available Source dir
     function doMove(files, cb){
       // if no files, skip
@@ -154,16 +133,6 @@ function run(dir, callback){
             
 
             newPath = path.normalize(newPath);
-
-            // rename doesn't work on Wexford server, need to do copy & remove instead
-            /*
-            fs.rename(image, newPath, function (err) {
-                if (err) throw err
-                // console.log('Successfully moved image!');
-                movedFiles.push(newPath);
-                done();
-              })
-            */
             
             fs.copyFile(image, newPath, function(err){
               if(err) throw err;
