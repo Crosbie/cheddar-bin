@@ -188,6 +188,9 @@ function readCheeseParams(cb){
       });
       
       request.on('requestCompleted',function(){
+        if(result===[]){
+            result = MAX_FILE_AGE;
+          }
         return cb(null,result);
       });
 
