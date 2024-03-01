@@ -139,7 +139,7 @@ function run(dir, callback){
 
               movedFiles.push(newPath);
               fs.rm(image, done);
-            }
+            })
           }, function(moveErr){
             cb(moveErr,movedFiles);
           })
