@@ -45,7 +45,7 @@ module.exports.start = function(callback){
             if(cpError){
               console.error('Error reading Cheese_Parameters:',cpError);
             } // continue running even if error reading Cheese_Parameters, MAX_FILE_AGE will default to 30
-            MAX_FILE_AGE = value || 30;
+            MAX_FILE_AGE = value || MAX_FILE_AGE;
             console.log('Max File Age:',MAX_FILE_AGE);
             
             console.log('Found %s directories',dirs.length);
@@ -182,7 +182,7 @@ function readCheeseParams(cb){
       });
 
       // Print the rows read
-      var result = [];
+      var result = MAX_FILE_AGE;
       request.on('row', function(data) {
           result = data[0].value;
       });
