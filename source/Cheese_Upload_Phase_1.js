@@ -100,7 +100,7 @@ function run(dir, callback){
     },
 
     function doCleanup(files, cb){
-      async.each(files,function(file,done) {
+      async.eachLimit(files,100,function(file,done) {
         // rename BMP file
         file = file.replace('.bmp','.jpg');
         // fs.rename(file,file+'.DONE',noop); // save file as .jpg.DONE
