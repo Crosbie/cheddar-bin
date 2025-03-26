@@ -91,7 +91,7 @@ function run(dir, callback){
     },
 
     function doConvert(files, cb){
-      async.each(files,function(file,done) {
+      async.eachLimit(files,100,function(file,done) {
         file = file.replace('.bmp','');
         convert(file,done)
       }, function(convertErr){
