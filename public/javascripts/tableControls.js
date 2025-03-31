@@ -121,7 +121,10 @@ $(function() {
   req.done(function(response){
     console.log('image response',response);
     var d = new Date();
-    modal.find('.modal-body #cheese-img').attr('src','data:image/png;base64,'+response[0].b64);
+    setTimeout(function(){
+      modal.find('.modal-body #cheese-img').attr('src','data:image/png;base64,'+response[0].b64);
+    },600);
+    
     // modal.find('.modal-body #cheese-img').attr('src','/images/cheese_block.jpg?'+d.getTime());
   });
   //define fail callback
