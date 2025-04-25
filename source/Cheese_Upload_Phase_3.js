@@ -10,6 +10,8 @@ var Request = tedious.Request;
 var TYPES = tedious.TYPES;
 
 var config = require('../dbConfig.json');
+// extend timeout to cover long running procedures
+config.options.requestTimeout = 1500000;
 
 var storedProcedure = '[dbo].[SP_UPLOAD_PHASE_3]';
 
