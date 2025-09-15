@@ -126,7 +126,7 @@ function run(dir, callback){
           }
 
           // move each image to SOURCE and collect array of new file locations to pass to next function
-          async.each(files, function(image,done){
+          async.each(files,100, function(image,done){
             var filename = image.replace(/^.*(\\|\/|\:)/, '');
 
             var newPath = SOURCE + '/' + filename;
